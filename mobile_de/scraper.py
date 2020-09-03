@@ -47,17 +47,7 @@ def search_url(makes, inp : list) -> str:
 
     url = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_DAMAGE_UNREPAIRED&isSearchRequest=true&scopeId=C&sfmr=false"
 
-    return url + url_params + "&pageNumber=1"
-
-def next_page(current_url : str, current_page : int) -> str:
-
-    if current_page < 10:
-        return current_url[:-1] + str(current_page + 1)
-    elif current_page >= 10:
-        return current_url[:-2] + str(current_page + 1)
-
-def get_pages_count(url : str) -> int:
-
+    # check number of pages
     response = get(url, headers = HEADERS)
     soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -66,9 +56,18 @@ def get_pages_count(url : str) -> int:
 
     pagesnr = soup.find_all(class_ = "btn btn--muted btn--s")
     if len(pagesnr) == 0:
-        return 1
+        pagesnr = 1
     else:
-        return int(pagesnr[(len(pagesnr) - 1)].get_text())
+        pagesnr = int(pagesnr[(len(pagesnr) - 1)].get_text())
+
+    return url + url_params + "&pageNumber=1", pagesnr
+
+def next_page(current_url : str, current_page : int) -> str:
+
+    if current_page < 10:
+        return current_url[:-1] + str(current_page + 1)
+    elif current_page >= 10:
+        return current_url[:-2] + str(current_page + 1)
 
 def get_car_links(url : str) -> list:
 
