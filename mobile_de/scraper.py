@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 HEADERS = {"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebkit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'}
 
-def search_url(makes, inp : list) -> str:
+def search_url(makes, inp : list) -> list:
     # what each makes index is
     # 0 - make
     # 1 - model
@@ -78,6 +78,7 @@ def get_car_links(url : str) -> list:
 
 
 def get_car_data(url : str) -> list:
+    print(url)
 
     response = get(url, headers = HEADERS)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -93,8 +94,10 @@ def get_car_data(url : str) -> list:
         car_price = int(car_price[ : -2])
 
     # registration
-    car_reg = soup.find(id = "rbt-firstRegistration-v").get_text()
-    #car_reg = soup.find(id = "rbt-category-v").get_text()
+    try:
+        car_reg = soup.find(id = "rbt-firstRegistration-v").get_text()
+    except AttributeError:
+        car_reg = soup.find(id = "rbt-category-v").get_text()
     if 'Neufahrzeug' in car_reg:
             car_reg = 2020
         #elif 'Vorführfahrzeug' in car_reg:
@@ -108,12 +111,12 @@ def get_car_data(url : str) -> list:
         car_reg = int(car_reg[3 : ])
 
     # mileage
-    car_mileage = int(soup.find(id = "rbt-mileage-v").get_text().replace('.', '')[: -4])
+    car_mileage = soup.find(id = "rbt-mileage-v").get_text().replace('.', '')[: -4]
 
     # power
-    car_power = soup.find(id = "rbt-power-v").get_text().split("(")[1][ : -4]
+    #car_power = soup.find(id = "rbt-power-v").get_text().split("(")[1][ : -4]
 
-    return car_title, car_reg, car_price, car_mileage, car_power
+    return car_title, car_reg, car_price, car_mileage#, car_power
 
 
 def check_car_price(url : str) -> int:
