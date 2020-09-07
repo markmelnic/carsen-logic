@@ -18,10 +18,12 @@ def search_url(makes, inp : list) -> list:
     url_params = ''
 
     if not inp[0].lower() == 'any' or not inp[0] == '':
+        car_make = inp[0]
         for make in makes:
             if make['n'].lower() == inp[0].lower():
-                url_params += "&makeModelVariant1.makeId=" + str(make['i'])
+                car_make = str(make['i'])
                 break
+        url_params += "&makeModelVariant1.makeId=" + car_make
 
     # model
     if not inp[1] == '' or not inp[1] == 0 :
