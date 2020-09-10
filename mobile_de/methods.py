@@ -18,7 +18,7 @@ def search(search_params : list) -> list:
             car_links.append(link)
         current_url = next_page(current_url, i + 1)
 
-    assert len(car_links) == 0
+    assert len(car_links) != 0
 
     data = [get_car_data(link) for link in car_links]
     #data = score(source_data : list, weights : list, *args)
@@ -28,11 +28,15 @@ def search(search_params : list) -> list:
 # existing searches checker
 def checker(data : list) -> list:
 
-    car_urls = [d[0] for d in data if not d[0] in car_urls]
+    changed = False
+    car_urls = [d[0] for d in data]
     for link in car_urls:
         new_price = check_car_price(link)
-        if not new_price == data[data.index(link)][1]:
-            data[data.index(link)][1] = new_price
+        if not float(new_price) == float(data[car_urls.index(link)][3]):
+            changed = True
+            data[car_urls.index(link)][3] = new_price
+
+    assert changed == True
 
     return data
 
