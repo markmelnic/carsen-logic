@@ -2,7 +2,7 @@
 from requests import get
 from bs4 import BeautifulSoup
 
-HEADERS = {"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebkit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'}
+from settings import HEADERS
 
 def search_url(makes, inp : list) -> list:
     # what each makes index is

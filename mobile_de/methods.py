@@ -1,17 +1,10 @@
 
-from inspect import getsourcefile
-import os.path
-import sys
+import json
 
-CUR_PATH = os.path.abspath(getsourcefile(lambda:0))
-CUR_DIR = os.path.dirname(CUR_PATH)
-PARENT_DIR = CUR_DIR[:CUR_DIR.rfind(os.path.sep)]
-sys.path.insert(0, PARENT_DIR)
-
-from scraper import *
+from mobile_de.scraper import *
 from scalg import score
 
-_MAKESJSON = 'makes.json'
+from settings import _MAKESJSON
 
 def search(search_params : list) -> list:
 
