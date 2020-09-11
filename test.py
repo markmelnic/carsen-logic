@@ -1,6 +1,5 @@
 
-from tests.autotest import autotest
+from mobile_de.methods import search, checker
 
 if __name__ == '__main__':
-    # testing mobile_de
-    autotest()
+    print('working')
