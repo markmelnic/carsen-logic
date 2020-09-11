@@ -17,17 +17,24 @@ def search_url(makes, inp : list) -> list:
 
     url_params = ''
 
+    # handle make and model
     if not inp[0].lower() == 'any' or not inp[0] == '':
         car_make = inp[0]
+        car_model = inp[1]
         for make in makes:
             if make['n'].lower() == inp[0].lower():
                 car_make = str(make['i'])
+                for model in make['models']:
+                    if inp[1].lower() == model['m'].lower():
+                        car_model = str(model['v'])
+                        break
                 break
         url_params += "&makeModelVariant1.makeId=" + car_make
-
-    # model
-    if not inp[1] == '' or not inp[1] == 0 :
-        url_params += "&makeModelVariant1.modelDescription=" + str(inp[1])
+        url_params += "&makeModelVariant1.modelId=" + car_model
+    else:
+        # model
+        if not inp[1] == '' or not inp[1] == 0 :
+            url_params += "&makeModelVariant1.modelDescription=" + str(inp[1])
 
     # price
     if not inp[2] == '' or not inp[2] == 0:
@@ -78,7 +85,6 @@ def get_car_links(url : str) -> list:
 
     return [link['href'] for link in soup.find_all('a', {'class': 'link--muted no--text--decoration result-item'})]
 
-
 def get_car_data(url : str) -> list:
     print(url)
 
@@ -118,8 +124,7 @@ def get_car_data(url : str) -> list:
     # power
     #car_power = soup.find(id = "rbt-power-v").get_text().split("(")[1][ : -4]
 
-    return car_title, car_reg, car_price, car_mileage#, car_power
-
+    return url, car_title, car_reg, car_price, car_mileage#, car_power
 
 def check_car_price(url : str) -> int:
 
