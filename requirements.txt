@@ -1,0 +1,3 @@
+requests==2.24.0
+scalg==0.1.4
+beautifulsoup4==4.9.1
