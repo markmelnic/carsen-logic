@@ -1,7 +1,7 @@
 import json, scalg
 
 from mobile_de.scraper import *
-from settings import _MAKESJSON
+from settings import _MAKESJSON, TEST_MAKESJSON
 
 
 def search(search_params: list) -> list:
@@ -40,8 +40,16 @@ def checker(data: list) -> list:
 
 
 def load_makes(website: str) -> dict:
-    with open(_MAKESJSON, "r", encoding="utf-8", newline="") as mjson:
-        data = mjson.read()
-        makes_dict = json.loads(data)
-        makes_dict = makes_dict[website]
-    return makes_dict
+    try:
+        with open(_MAKESJSON, "r", encoding="utf-8", newline="") as mjson:
+            data = mjson.read()
+            makes_dict = json.loads(data)
+            makes_dict = makes_dict[website]
+        return makes_dict
+
+    except FileNotFoundError:
+        with open(TEST_MAKESJSON, "r", encoding="utf-8", newline="") as mjson:
+            data = mjson.read()
+            makes_dict = json.loads(data)
+            makes_dict = makes_dict[website]
+        return makes_dict
