@@ -1,14 +1,12 @@
-
-import json
+import json, scalg
 
 from mobile_de.scraper import *
-from scalg import score
-
 from settings import _MAKESJSON
 
-def search(search_params : list) -> list:
 
-    makes_dict = load_makes('mobile_de')
+def search(search_params: list) -> list:
+
+    makes_dict = load_makes("mobile_de")
     current_url, pagesnr = search_url(makes_dict, search_params)
 
     # get links
@@ -21,12 +19,13 @@ def search(search_params : list) -> list:
     assert len(car_links) != 0
 
     data = [get_car_data(link) for link in car_links]
-    #data = score(source_data : list, weights : list, *args)
-    
+    data = scalg.score_columns(data, [2, 3, 4], [1, 0, 0])
+
     return data
 
+
 # existing searches checker
-def checker(data : list) -> list:
+def checker(data: list) -> list:
 
     changed = False
     car_urls = [d[0] for d in data]
@@ -37,12 +36,12 @@ def checker(data : list) -> list:
             data[car_urls.index(link)][3] = new_price
 
     assert changed == True
-
     return data
 
-def load_makes(website : str) -> dict:
-    with open(_MAKESJSON, 'r', encoding="utf-8", newline='') as mjson:
+
+def load_makes(website: str) -> dict:
+    with open(_MAKESJSON, "r", encoding="utf-8", newline="") as mjson:
         data = mjson.read()
-        makes_dict = (json.loads(data))
+        makes_dict = json.loads(data)
         makes_dict = makes_dict[website]
     return makes_dict
