@@ -5,7 +5,6 @@ from settings import _MAKESJSON, TEST_MAKESJSON
 
 
 def search(search_params: list) -> list:
-
     makes_dict = load_makes("mobile_de")
     current_url, pagesnr = search_url(makes_dict, search_params)
 
@@ -26,7 +25,6 @@ def search(search_params: list) -> list:
 
 # existing searches checker
 def checker(data: list) -> list:
-
     changed = False
     car_urls = [d[0] for d in data]
     for link in car_urls:

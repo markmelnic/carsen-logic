@@ -73,7 +73,6 @@ def search_url(makes, inp: list) -> list:
 
 
 def next_page(current_url: str, current_page: int) -> str:
-
     if current_page < 10:
         return current_url[:-1] + str(current_page + 1)
     elif current_page >= 10:
@@ -81,7 +80,6 @@ def next_page(current_url: str, current_page: int) -> str:
 
 
 def get_car_links(url: str) -> list:
-
     response = get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -94,7 +92,6 @@ def get_car_links(url: str) -> list:
 
 
 def get_car_data(url: str) -> list:
-
     response = get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -135,7 +132,6 @@ def get_car_data(url: str) -> list:
 
 
 def check_car_price(url: str) -> int:
-
     response = get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
