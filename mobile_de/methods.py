@@ -4,6 +4,7 @@ from mobile_de.scraper import *
 from settings import _MAKESJSON, TEST_MAKESJSON
 
 
+# perform a detailed search of each listing
 def search(search_params: list) -> list:
     makes_dict = load_makes("mobile_de")
     current_url, pagesnr = search_url(makes_dict, search_params)
@@ -23,6 +24,24 @@ def search(search_params: list) -> list:
     return data
 
 
+# perform a surface search for the generated url
+def surface_search(search_params: list) -> list:
+    makes_dict = load_makes("mobile_de")
+    current_url, pagesnr = search_url(makes_dict, search_params)
+
+    data = []
+    for i in range(pagesnr):
+        for item in surface_data(current_url):
+            data.append(item)
+        current_url = next_page(current_url, i + 1)
+
+    assert data != []
+
+    data = scalg.score_columns(data, [2, 3, 4], [1, 0, 0])
+
+    return data
+
+
 # existing searches checker
 def checker(data: list) -> list:
     changed = False
@@ -37,6 +56,7 @@ def checker(data: list) -> list:
     return data
 
 
+# load makes and models from json file
 def load_makes(website: str) -> dict:
     try:
         with open(_MAKESJSON, "r", encoding="utf-8", newline="") as mjson:

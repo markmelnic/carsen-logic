@@ -7,10 +7,11 @@ from settings import HEADERS
 
 BASE_URL = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_DAMAGE_UNREPAIRED&isSearchRequest=true&scopeId=C&sfmr=false"
 
+
 def search_url(makes, inp: list) -> list:
     # what each makes index is
-    inp[0] = inp[0].lower() # 0 - make
-    inp[1] = inp[1].lower() # 1 - model
+    inp[0] = inp[0].lower()  # 0 - make
+    inp[1] = inp[1].lower()  # 1 - model
     # 2 - minprice
     # 3 - maxprice
     # 4 - minreg
@@ -26,31 +27,41 @@ def search_url(makes, inp: list) -> list:
     if not inp[0].lower() == "any" or not inp[0] == "":
         make_matcher = []
         for make in makes:
-            make_matcher.append(SequenceMatcher(a = make["n"].lower(), b = car_make).ratio())
+            make_matcher.append(
+                SequenceMatcher(a=make["n"].lower(), b=car_make).ratio()
+            )
             if make["n"].lower() == inp[0]:
                 car_make = str(make["i"])
                 if not inp[1] == "any" or not inp[1] == "":
                     model_matcher = []
                     for model in make["models"]:
-                        model_matcher.append(SequenceMatcher(a = model["m"].lower(), b = car_model).ratio())
+                        model_matcher.append(
+                            SequenceMatcher(a=model["m"].lower(), b=car_model).ratio()
+                        )
                         if model["m"].lower() == inp[1]:
                             car_model = str(model["v"])
                             break
                     if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
-                        car_model = make["models"][model_matcher.index(max(model_matcher))]["v"]
+                        car_model = make["models"][
+                            model_matcher.index(max(model_matcher))
+                        ]["v"]
                 break
 
         if car_make == inp[0] and any(x > 0.6 for x in make_matcher):
             car_make = makes[make_matcher.index(max(make_matcher))]["i"]
             model_matcher = []
             for model in makes[make_matcher.index(max(make_matcher))]["models"]:
-                model_matcher.append(SequenceMatcher(a = model["m"].lower(), b = car_model).ratio())
+                model_matcher.append(
+                    SequenceMatcher(a=model["m"].lower(), b=car_model).ratio()
+                )
                 if model["m"].lower() == inp[1]:
                     car_model = str(model["v"])
                     break
             if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
-                car_model = makes[make_matcher.index(max(make_matcher))]["models"][model_matcher.index(max(model_matcher))]["v"]
-    
+                car_model = makes[make_matcher.index(max(make_matcher))]["models"][
+                    model_matcher.index(max(model_matcher))
+                ]["v"]
+
         url_params += "&makeModelVariant1.makeId=" + car_make
         url_params += "&makeModelVariant1.modelId=" + car_model
     else:
@@ -99,6 +110,34 @@ def next_page(current_url: str, current_page: int) -> str:
         return current_url[:-1] + str(current_page + 1)
     elif current_page >= 10:
         return current_url[:-2] + str(current_page + 1)
+
+
+def surface_data(url: str) -> list:
+    response = get(url, headers=HEADERS)
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    listings = soup.find_all(
+        "a", {"class": "link--muted no--text--decoration result-item"}
+    )
+
+    data = []
+    for listing in listings:
+        url = listing["href"]
+        title = listing.find(class_ = "h3 u-text-break-word").get_text()
+        price = listing.find(class_ = "h3 u-block").get_text().replace(u'\xa0', ' ').replace('.', '')[:-2]
+
+        # handle mileage and registration
+        regmil = listing.find(class_ = "rbt-regMilPow").get_text().split(",")
+        reg = regmil[0]
+        if "Neuwagen" in reg or "Tageszulassung" in reg:
+            reg = datetime.now().year
+        else:
+            reg = reg[-4:]
+        mileage = regmil[1].replace(u'\xa0', ' ').replace('.', '')[:-2].replace(' ', '')
+
+        data.append([url, title, reg, price, mileage])
+
+    return data
 
 
 def get_car_links(url: str) -> list:
