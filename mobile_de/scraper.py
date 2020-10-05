@@ -1,3 +1,4 @@
+from datetime import datetime
 from requests import get
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
@@ -132,7 +133,8 @@ def get_car_data(url: str) -> list:
     except AttributeError:
         car_reg = soup.find(id="rbt-category-v").get_text()
     if "Neufahrzeug" in car_reg:
-        car_reg = 2020
+        car_reg = datetime.now().year
+
     # elif 'Vorführfahrzeug' in car_reg:
     #    car_reg = 4
     #    #carReg = 'Demo Car'
