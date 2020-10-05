@@ -10,7 +10,7 @@ def search(search_params: list) -> list:
 
     # get links
     car_links = []
-    for i in range(pagesnr - 1):
+    for i in range(pagesnr):
         for link in get_car_links(current_url):
             car_links.append(link)
         current_url = next_page(current_url, i + 1)

@@ -4,6 +4,7 @@ from difflib import SequenceMatcher
 
 from settings import HEADERS
 
+BASE_URL = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_DAMAGE_UNREPAIRED&isSearchRequest=true&scopeId=C&sfmr=false"
 
 def search_url(makes, inp: list) -> list:
     # what each makes index is
@@ -74,7 +75,7 @@ def search_url(makes, inp: list) -> list:
     if not inp[7] == "" or not inp[7] == 0:
         url_params += "&maxMileage=" + str(inp[7])
 
-    url = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_DAMAGE_UNREPAIRED&isSearchRequest=true&scopeId=C&sfmr=false"
+    url = BASE_URL + url_params + "&pageNumber=1"
 
     # check number of pages
     response = get(url, headers=HEADERS)
@@ -89,7 +90,7 @@ def search_url(makes, inp: list) -> list:
     else:
         pagesnr = int(pagesnr[(len(pagesnr) - 1)].get_text())
 
-    return url + url_params + "&pageNumber=1", pagesnr
+    return url, pagesnr
 
 
 def next_page(current_url: str, current_page: int) -> str:
