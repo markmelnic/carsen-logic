@@ -4,12 +4,12 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
-from mobile_de.methods import search, checker
+from mobile_de.methods import search, surface_search
 from settings import TEST_DATA_FILE, TEST_SEARCH_PARAMS
 import scalg, csv
 
 if __name__ == "__main__":
-    t = 2
+    t = 3
     if t == 1:
         with open(TEST_DATA_FILE, "r") as csvfile:
             data = list(csv.reader(csvfile))
@@ -18,5 +18,9 @@ if __name__ == "__main__":
             print(dt[1:])
     elif t == 2:
         dataset = search(TEST_SEARCH_PARAMS)
+        for dt in dataset:
+            print(dt[1:])
+    elif t == 3:
+        dataset = surface_search(TEST_SEARCH_PARAMS)
         for dt in dataset:
             print(dt[1:])
