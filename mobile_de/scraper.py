@@ -1,13 +1,14 @@
 from requests import get
 from bs4 import BeautifulSoup
+from difflib import SequenceMatcher
 
 from settings import HEADERS
 
 
 def search_url(makes, inp: list) -> list:
     # what each makes index is
-    # 0 - make
-    # 1 - model
+    inp[0] = inp[0].lower() # 0 - make
+    inp[1] = inp[1].lower() # 1 - model
     # 2 - minprice
     # 3 - maxprice
     # 4 - minreg
@@ -21,19 +22,38 @@ def search_url(makes, inp: list) -> list:
     if not inp[0].lower() == "any" or not inp[0] == "":
         car_make = inp[0]
         car_model = inp[1]
+        make_matcher = []
         for make in makes:
-            if make["n"].lower() == inp[0].lower():
+            make_matcher.append(SequenceMatcher(a = make["n"].lower(), b = car_make).ratio())
+            if make["n"].lower() == inp[0]:
                 car_make = str(make["i"])
-                for model in make["models"]:
-                    if inp[1].lower() == model["m"].lower():
-                        car_model = str(model["v"])
-                        break
+                if not inp[1] == "any" or not inp[1] == "":
+                    model_matcher = []
+                    for model in make["models"]:
+                        model_matcher.append(SequenceMatcher(a = model["m"].lower(), b = car_model).ratio())
+                        if model["m"].lower() == inp[1]:
+                            car_model = str(model["v"])
+                            break
+                    if car_model == inp[1]:
+                        car_model = make["models"][model_matcher.index(max(model_matcher))]["v"]
                 break
+
+        if car_make == inp[0]:
+            car_make = makes[make_matcher.index(max(make_matcher))]["i"]
+            model_matcher = []
+            for model in makes[make_matcher.index(max(make_matcher))]["models"]:
+                model_matcher.append(SequenceMatcher(a = model["m"].lower(), b = car_model).ratio())
+                if model["m"].lower() == inp[1]:
+                    car_model = str(model["v"])
+                    break
+            if car_model == inp[1]:
+                car_model = makes[make_matcher.index(max(make_matcher))]["models"][model_matcher.index(max(model_matcher))]["v"]
+    
         url_params += "&makeModelVariant1.makeId=" + car_make
         url_params += "&makeModelVariant1.modelId=" + car_model
     else:
         # model
-        if not inp[1] == "" or not inp[1] == 0:
+        if not inp[1].lower() == "any" or not inp[1] == "":
             url_params += "&makeModelVariant1.modelDescription=" + str(inp[1])
 
     # price
