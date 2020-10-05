@@ -20,9 +20,9 @@ def search_url(makes, inp: list) -> list:
     url_params = ""
 
     # handle make and model
+    car_make = inp[0]
+    car_model = inp[1]
     if not inp[0].lower() == "any" or not inp[0] == "":
-        car_make = inp[0]
-        car_model = inp[1]
         make_matcher = []
         for make in makes:
             make_matcher.append(SequenceMatcher(a = make["n"].lower(), b = car_make).ratio())
@@ -35,11 +35,11 @@ def search_url(makes, inp: list) -> list:
                         if model["m"].lower() == inp[1]:
                             car_model = str(model["v"])
                             break
-                    if car_model == inp[1]:
+                    if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
                         car_model = make["models"][model_matcher.index(max(model_matcher))]["v"]
                 break
 
-        if car_make == inp[0]:
+        if car_make == inp[0] and any(x > 0.6 for x in make_matcher):
             car_make = makes[make_matcher.index(max(make_matcher))]["i"]
             model_matcher = []
             for model in makes[make_matcher.index(max(make_matcher))]["models"]:
@@ -47,7 +47,7 @@ def search_url(makes, inp: list) -> list:
                 if model["m"].lower() == inp[1]:
                     car_model = str(model["v"])
                     break
-            if car_model == inp[1]:
+            if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
                 car_model = makes[make_matcher.index(max(make_matcher))]["models"][model_matcher.index(max(model_matcher))]["v"]
     
         url_params += "&makeModelVariant1.makeId=" + car_make
