@@ -122,20 +122,23 @@ def surface_data(url: str) -> list:
 
     data = []
     for listing in listings:
-        url = listing["href"]
+        listing_url = listing["href"]
         title = listing.find(class_ = "h3 u-text-break-word").get_text()
-        price = listing.find(class_ = "h3 u-block").get_text().replace(u'\xa0', ' ').replace('.', '')[:-2]
+        price = listing.find(class_ = "h3 u-block").get_text().replace(u'\xa0', '').replace('.', '')[:-2]
 
         # handle mileage and registration
         regmil = listing.find(class_ = "rbt-regMilPow").get_text().split(",")
         reg = regmil[0]
-        if "Neuwagen" in reg or "Tageszulassung" in reg:
+        if "Neuwagen" or "Tageszulassung" in reg:
             reg = datetime.now().year
         else:
             reg = reg[-4:]
-        mileage = regmil[1].replace(u'\xa0', ' ').replace('.', '')[:-2].replace(' ', '')
+        try:
+            mileage = int(regmil[1].replace(u'\xa0', '').replace('.', '')[:-2])
+        except ValueError:
+            mileage = 0
 
-        data.append([url, title, reg, price, mileage])
+        data.append([listing_url, title, int(reg), int(price), mileage])
 
     return data
 
@@ -190,7 +193,7 @@ def get_car_data(url: str) -> list:
     # power
     # car_power = soup.find(id = "rbt-power-v").get_text().split("(")[1][ : -4]
 
-    return [url, car_title, car_reg, car_price, car_mileage]  # , car_power
+    return [url, car_title, int(car_reg), int(car_price), int(car_mileage)]  # , car_power
 
 
 def check_car_price(url: str) -> int:
