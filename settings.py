@@ -6,6 +6,6 @@ HEADERS = {
 _MAKESJSON = "makes.json"
 
 # test settings
-TEST_MAKESJSON = "makes_test_copy.json"
+TEST_MAKESJSON = "tests/test_data/makes_test_copy.json"
 TEST_DATA_FILE = "tests/test_data/data.csv"
 TEST_SEARCH_PARAMS = ["Lexus", "LC 500h", "", "", "", "", "", ""]
