@@ -6,7 +6,8 @@ from difflib import SequenceMatcher
 from settings import HEADERS
 
 BASE_URL = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_DAMAGE_UNREPAIRED&isSearchRequest=true&scopeId=C&sfmr=false"
-
+PRICE_KEYS = ["Gross"]
+REG_KEYS = ["New vehicle", "New car"]
 
 def search_url(makes, inp: list) -> list:
     # what each makes index is
@@ -87,14 +88,14 @@ def search_url(makes, inp: list) -> list:
     if not inp[7] == "" or not inp[7] == 0:
         url_params += "&maxMileage=" + str(inp[7])
 
-    url = BASE_URL + url_params + "&pageNumber=1"
+    url = BASE_URL + url_params + "&pageNumber=1&lang=en"
 
     # check number of pages
     response = get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     checker = soup.find(class_="h2 u-text-orange rbt-result-list-headline").get_text()
-    checker = int(checker.split(" ")[0].replace(" ", "").replace(".", ""))
+    checker = int(checker.split(" ")[0].replace(" ", "").replace(",", ""))
 
     pagesnr = soup.find_all(class_="btn btn--muted btn--s")
     if len(pagesnr) == 0:
@@ -124,26 +125,28 @@ def surface_data(url: str) -> list:
     for listing in listings:
         listing_url = listing["href"]
         title = listing.find(class_="h3 u-text-break-word").get_text()
-        price = (
+        price = int(
             listing.find(class_="h3 u-block")
             .get_text()
-            .replace(u"\xa0", "")
-            .replace(".", "")[:-2]
+            .replace("\xa0", "")
+            .replace(",", "")
+            .replace(".", "")
+            .replace("€", "")
         )
 
         # handle mileage and registration
         regmil = listing.find(class_="rbt-regMilPow").get_text().split(",")
         reg = regmil[0]
-        if "Neuwagen" or "Tageszulassung" in reg:
+        if any(keyword in reg for keyword in REG_KEYS):
             reg = datetime.now().year
         else:
-            reg = reg[-4:]
+            reg = int(reg[-4:])
         try:
             mileage = int(regmil[1].replace(u"\xa0", "").replace(".", "")[:-2])
         except ValueError:
             mileage = 0
 
-        data.append([listing_url, title, int(reg), int(price), mileage])
+        data.append([listing_url, title, reg, price, mileage])
 
     return data
 
@@ -161,34 +164,26 @@ def get_car_links(url: str) -> list:
 
 
 def get_car_data(url: str) -> list:
-    response = get(url, headers=HEADERS)
+    response = get(url+"&lang=en", headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     # title
     car_title = soup.find(id="rbt-ad-title").get_text()
 
     # price
-    car_price = soup.find(class_="h3 rbt-prime-price").get_text().replace(".", "")
-    if "Brutto" in car_price:
-        car_price = int(car_price[:-11])
+    car_price = soup.find(class_="h3 rbt-prime-price").get_text().replace(",", "")
+    if any(keyword in car_price for keyword in PRICE_KEYS):
+        car_price = int(car_price[1:-8])
     else:
-        car_price = int(car_price[:-2])
+        car_price = int(car_price[1:])
 
     # registration
     try:
         car_reg = soup.find(id="rbt-firstRegistration-v").get_text()
     except AttributeError:
         car_reg = soup.find(id="rbt-category-v").get_text()
-    if "Neufahrzeug" in car_reg:
+    if any(keyword in car_reg for keyword in REG_KEYS):
         car_reg = datetime.now().year
-
-    # elif 'Vorführfahrzeug' in car_reg:
-    #    car_reg = 4
-    #    #carReg = 'Demo Car'
-    # elif 'Jahreswagen' in car_reg:
-    #    car_reg = 3
-    #    #carReg = 'Employee Car'
-    #    #Jahreswagen - employee car
     else:
         car_reg = int(car_reg[3:])
 
@@ -198,12 +193,22 @@ def get_car_data(url: str) -> list:
     # power
     # car_power = soup.find(id = "rbt-power-v").get_text().split("(")[1][ : -4]
 
+    # options
+    try:
+        options = [
+            option.get_text()
+            for option in soup.find(id="rbt-features").find(class_="g-row")
+        ]
+    except AttributeError:
+        options = []
+
     return [
         url,
         car_title,
         int(car_reg),
         int(car_price),
         int(car_mileage),
+        "|".join(options),
     ]  # , car_power
 
 
