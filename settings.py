@@ -5,6 +5,20 @@ HEADERS = {
 
 _MAKESJSON = "makes.json"
 
+# database settings
+CARS_DB = "db.sqlite3"
+TABLE_DATA = [
+    ("url", "TEXT"),
+    ("title", "TEXT"),
+    ("registration", "REAL"),
+    ("price", "REAL"),
+    ("mileage", "REAL"),
+    ("score", "REAL"),
+    ("options", "TEXT"),
+    ("changes", "TEXT"),
+]
+
+
 # test settings
 TEST_MAKESJSON = "tests/test_data/makes_test_copy.json"
 TEST_DATA_FILE = "tests/test_data/data.csv"
