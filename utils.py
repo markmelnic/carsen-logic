@@ -17,3 +17,7 @@ def load_makes(website: str) -> dict:
             makes_dict = json.loads(data)
             makes_dict = makes_dict[website]
         return makes_dict
+
+
+def table_name(s1: str, s2: str) -> str:
+    return '"' + s1.replace(" ", "-") + "_" + s2.replace(" ", "-") + '"'
