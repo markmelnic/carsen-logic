@@ -1,6 +1,6 @@
 import sqlite3
 
-from utils import *
+from utils import load_makes
 from settings import CARS_DB, TABLE_DATA
 
 
@@ -16,7 +16,7 @@ class DB:
             for model in item["models"]:
                 mod = model["m"]
                 try:
-                    self.create_table(table_name(name, mod), TABLE_DATA)
+                    self.create_table(self.table_name(name, mod), TABLE_DATA)
                 except sqlite3.OperationalError:
                     pass
 
@@ -29,6 +29,9 @@ class DB:
         query = "CREATE TABLE %s (%s)" % (table_name, field_data)
         self.cur.execute(query)
         self.conn.commit()
+
+    def table_name(self, s1: str, s2: str) -> str:
+        return '"' + s1.replace(" ", "-") + "_" + s2.replace(" ", "-") + '"'
 
     def add_value(self, table: str, values: tuple):
         query = "INSERT INTO %s VALUES %s" % (table, str(values))
