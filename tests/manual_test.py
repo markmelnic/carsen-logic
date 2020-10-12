@@ -4,7 +4,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
-from db.db import DB
+from db import DB
 from mobile_de.methods import search, surface_search
 from settings import TEST_DATA_FILE, TEST_SEARCH_PARAMS
 import scalg, csv
