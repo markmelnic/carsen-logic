@@ -221,7 +221,8 @@ def check_car_price(url: str) -> int:
     except AttributeError:
         return False
 
-    if "Brutto" in car_price:
-        return int(car_price[:-11])
+    car_price = soup.find(class_="h3 rbt-prime-price").get_text().replace(",", "")
+    if any(keyword in car_price for keyword in PRICE_KEYS):
+        return int(car_price[1:-8])
     else:
-        return int(car_price[:-2])
+        return int(car_price[1:])
