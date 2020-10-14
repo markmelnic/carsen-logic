@@ -151,7 +151,7 @@ def surface_data(url: str) -> list:
     return data
 
 
-def get_car_links(url: str) -> list:
+def get_page_listings(url: str) -> list:
     response = get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
