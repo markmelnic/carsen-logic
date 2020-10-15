@@ -191,7 +191,10 @@ def get_car_data(url: str) -> list:
     car_mileage = soup.find(id="rbt-mileage-v").get_text().replace(".", "")[:-3]
 
     # power
-    # car_power = soup.find(id = "rbt-power-v").get_text().split("(")[1][ : -4]
+    try:
+        car_power = soup.find(id = "rbt-power-v").get_text().split("(")[1][ : -4]
+    except AttributeError:
+        car_power = 0
 
     # options
     try:
