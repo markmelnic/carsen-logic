@@ -202,6 +202,12 @@ def get_car_data(url: str) -> list:
     # transmission
     transmission = soup.find(id = "rbt-transmission-v").get_text().split(" ")[0]
 
+    # car color
+    try:
+        color = soup.find(id = "rbt-color-v").get_text()
+    except AttributeError:
+        color = ""
+
     # options
     try:
         options = [
