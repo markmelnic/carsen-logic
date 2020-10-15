@@ -196,6 +196,9 @@ def get_car_data(url: str) -> list:
     except AttributeError:
         car_power = 0
 
+    # fuel type
+    fuel_type = soup.find(id = "rbt-fuel-v").get_text()
+
     # options
     try:
         options = [
