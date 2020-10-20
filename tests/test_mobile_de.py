@@ -7,12 +7,12 @@ from mobile_de.methods import *
 
 class Methods(unittest.TestCase):
     def test_search(self):
-        data = search(TEST_SEARCH_PARAMS)
+        data = search(TEST_SEARCH_PARAMS, db=False)
         self.assertIsNot(data, [] or None)
         self.assertTrue(type(data) == list)
 
     def test_surface_search(self):
-        data = surface_search(TEST_SEARCH_PARAMS)
+        data = surface_search(TEST_SEARCH_PARAMS, db=False)
         self.assertIsNot(data, [] or None)
         self.assertTrue(type(data) == list)
 
@@ -43,6 +43,6 @@ from mobile_de.scraper import *
 class Scraper(unittest.TestCase):
     def test_search_url(self):
         makes = load_makes("mobile_de")
-        url, pages_number = search_url(makes, TEST_SEARCH_PARAMS)
+        url, pages_number = search_url(makes, TEST_SEARCH_PARAMS, db=False)
         self.assertTrue(type(url) == str and url != "", url)
         self.assertTrue(pages_number > 0)
