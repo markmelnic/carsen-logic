@@ -223,9 +223,13 @@ def get_car_data(url: str) -> list:
     return [
         url,
         car_title,
-        int(car_reg),
         int(car_price),
+        int(car_reg),
         int(car_mileage),
+        car_type,
+        fuel_type,
+        transmission,
+        color,
         "|".join(options),
     ]  # , car_power
 

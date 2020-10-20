@@ -10,12 +10,14 @@ CARS_DB = "db.sqlite3"
 TABLE_DATA = [
     ("url", "TEXT"),
     ("title", "TEXT"),
-    ("registration", "REAL"),
     ("price", "REAL"),
+    ("registration", "REAL"),
     ("mileage", "REAL"),
+    ("type", "TEXT"),
+    ("fuel", "TEXT"),
+    ("transmission", "TEXT"),
+    ("color", "TEXT"),
     ("score", "REAL"),
-    ("options", "TEXT"),
-    ("changes", "TEXT"),
 ]
 
 
