@@ -10,7 +10,7 @@ from settings import TEST_DATA_FILE, TEST_SEARCH_PARAMS
 import scalg, csv
 
 if __name__ == "__main__":
-    t = 4
+    t = 5
     if t == 1:
         with open(TEST_DATA_FILE, "r") as csvfile:
             data = list(csv.reader(csvfile))
@@ -27,4 +27,9 @@ if __name__ == "__main__":
             print(dt[1:])
     elif t == 4:
         db = DB()
+        db.close_conn()
+    elif t == 5:
+        db = DB()
+        dataset = search(TEST_SEARCH_PARAMS)
+        db.add_values(dataset[0] ,dataset[1])
         db.close_conn()
