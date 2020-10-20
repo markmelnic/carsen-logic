@@ -20,7 +20,11 @@ def search_url(makes, inp: list) -> list:
     # 6 - minmileage
     # 7 - maxmileage
 
+    # generate url parameters
     url_params = ""
+
+    # find corresponding database
+    database = ""
 
     # handle make and model
     car_make = inp[0]
@@ -33,6 +37,7 @@ def search_url(makes, inp: list) -> list:
             )
             if make["n"].lower() == inp[0]:
                 car_make = str(make["i"])
+                database += str(make["n"]) + '_'
                 if not inp[1] == "any" or not inp[1] == "":
                     model_matcher = []
                     for model in make["models"]:
@@ -41,15 +46,18 @@ def search_url(makes, inp: list) -> list:
                         )
                         if model["m"].lower() == inp[1]:
                             car_model = str(model["v"])
+                            database += str(model["m"]).replace(' ', '-')
                             break
                     if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
                         car_model = make["models"][
                             model_matcher.index(max(model_matcher))
                         ]["v"]
+                        database = str(car_model["m"]).replace(' ', '-')
                 break
 
         if car_make == inp[0] and any(x > 0.6 for x in make_matcher):
             car_make = makes[make_matcher.index(max(make_matcher))]["i"]
+            database += str(car_make["n"]) + '_'
             model_matcher = []
             for model in makes[make_matcher.index(max(make_matcher))]["models"]:
                 model_matcher.append(
@@ -57,11 +65,13 @@ def search_url(makes, inp: list) -> list:
                 )
                 if model["m"].lower() == inp[1]:
                     car_model = str(model["v"])
+                    database = str(car_model["m"]).replace(' ', '-')
                     break
             if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
                 car_model = makes[make_matcher.index(max(make_matcher))]["models"][
                     model_matcher.index(max(model_matcher))
                 ]["v"]
+                database = str(car_model["m"]).replace(' ', '-')
 
         url_params += "&makeModelVariant1.makeId=" + car_make
         url_params += "&makeModelVariant1.modelId=" + car_model
@@ -103,7 +113,7 @@ def search_url(makes, inp: list) -> list:
     else:
         pagesnr = int(pagesnr[(len(pagesnr) - 1)].get_text())
 
-    return url, pagesnr
+    return url, pagesnr, database
 
 
 def next_page(current_url: str, current_page: int) -> str:

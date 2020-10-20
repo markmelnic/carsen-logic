@@ -6,7 +6,7 @@ from mobile_de.scraper import *
 # perform a detailed search of each listing
 def search(search_params: list) -> list:
     makes_dict = load_makes("mobile_de")
-    current_url, pagesnr = search_url(makes_dict, search_params)
+    current_url, pagesnr, database = search_url(makes_dict, search_params)
 
     # get links
     car_links = []
@@ -20,7 +20,7 @@ def search(search_params: list) -> list:
     data = [get_car_data(link) for link in car_links]
     data = scalg.score_columns(data, [2, 3, 4], [1, 0, 0])
 
-    return data
+    return database, data
 
 
 # perform a surface search for the generated url
