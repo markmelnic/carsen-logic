@@ -16,7 +16,7 @@ class DB:
             for model in item["models"]:
                 mod = model["m"]
                 try:
-                    self.create_table(self.table_name(name, mod), TABLE_DATA)
+                    self.create_table(self.table_name([name, mod]), TABLE_DATA)
                 except sqlite3.OperationalError:
                     pass
 
@@ -30,8 +30,11 @@ class DB:
         self.cur.execute(query)
         self.conn.commit()
 
-    def table_name(self, s1: str, s2: str) -> str:
-        return '"' + s1.replace(" ", "-") + "_" + s2.replace(" ", "-") + '"'
+    def table_name(self, title_data) -> str:
+        if type(title_data) == list:
+            return '"' + title_data[0].replace(" ", "-") + "_" + title_data[1].replace(" ", "-") + '"'
+        elif '_' in title_data:
+            return '"' + title_data + '"'
 
     def add_value(self, table: str, values: tuple):
         query = "INSERT INTO %s VALUES %s" % (table, str(values))
@@ -44,7 +47,7 @@ class DB:
             qlen += "?"
             if not i == len(values[0]) - 1:
                 qlen += ", "
-        query = "INSERT INTO %s VALUES (%s)" % (table, qlen)
+        query = "INSERT INTO %s VALUES (%s)" % (self.table_name(table), qlen)
         self.cur.executemany(query, values)
         self.conn.commit()
 
