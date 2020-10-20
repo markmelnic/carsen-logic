@@ -31,5 +31,5 @@ if __name__ == "__main__":
     elif t == 5:
         db = DB()
         dataset = search(TEST_SEARCH_PARAMS)
-        db.add_values(dataset[0] ,dataset[1])
+        db.add_values(dataset[0], dataset[1])
         db.close_conn()
