@@ -249,7 +249,7 @@ def get_car_data(url: str) -> list:
 
 
 def check_car_price(url: str) -> int:
-    response = get(url, headers=HEADERS)
+    response = get(url + "&lang=en", headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     try:
