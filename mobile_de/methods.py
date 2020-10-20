@@ -6,7 +6,10 @@ from mobile_de.scraper import *
 # perform a detailed search of each listing
 def search(search_params: list, db=True) -> list:
     makes_dict = load_makes("mobile_de")
-    current_url, pagesnr, database = search_url(makes_dict, search_params, db)
+    if db:
+        current_url, pagesnr, database = search_url(makes_dict, search_params, db)
+    else:
+        current_url, pagesnr = search_url(makes_dict, search_params, db)
 
     # get links
     car_links = []
@@ -27,9 +30,9 @@ def search(search_params: list, db=True) -> list:
 
 
 # perform a surface search for the generated url
-def surface_search(search_params: list) -> list:
+def surface_search(search_params: list, db=True) -> list:
     makes_dict = load_makes("mobile_de")
-    current_url, pagesnr = search_url(makes_dict, search_params)
+    current_url, pagesnr = search_url(makes_dict, search_params, db)
 
     data = []
     for i in range(pagesnr):
@@ -50,9 +53,9 @@ def checker(data: list) -> list:
     car_urls = [d[0] for d in data]
     for link in car_urls:
         new_price = check_car_price(link)
-        if not float(new_price) == float(data[car_urls.index(link)][3]):
+        if not float(new_price) == float(data[car_urls.index(link)][2]):
             changed = True
-            data[car_urls.index(link)][3] = new_price
+            data[car_urls.index(link)][2] = new_price
 
     assert changed == True
     return data
