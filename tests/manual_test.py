@@ -5,12 +5,12 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
 from db import DB
-from mobile_de.methods import search, surface_search
+from mobile_de.methods import search, surface_search, checker
 from settings import TEST_DATA_FILE, TEST_SEARCH_PARAMS
 import scalg, csv
 
 if __name__ == "__main__":
-    t = 5
+    t = 6
     if t == 1:
         with open(TEST_DATA_FILE, "r") as csvfile:
             data = list(csv.reader(csvfile))
@@ -33,3 +33,11 @@ if __name__ == "__main__":
         dataset = search(TEST_SEARCH_PARAMS)
         db.add_values(dataset[0], dataset[1])
         db.close_conn()
+    elif t == 6:
+        with open(TEST_DATA_FILE, "r") as csvfile:
+            data = list(csv.reader(csvfile))
+        try:
+            checker(data)
+        except AssertionError:
+            # no changes found
+            pass
