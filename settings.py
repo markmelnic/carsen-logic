@@ -17,6 +17,7 @@ TABLE_DATA = [
     ("fuel", "TEXT"),
     ("transmission", "TEXT"),
     ("color", "TEXT"),
+    ("options", "TEXT"),
     ("score", "REAL"),
 ]
 
