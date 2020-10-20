@@ -9,7 +9,8 @@ BASE_URL = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_D
 PRICE_KEYS = ["Gross"]
 REG_KEYS = ["New vehicle", "New car"]
 
-def search_url(makes, inp: list) -> list:
+
+def search_url(makes, inp: list, db: bool) -> list:
     # what each makes index is
     inp[0] = inp[0].lower()  # 0 - make
     inp[1] = inp[1].lower()  # 1 - model
@@ -37,7 +38,7 @@ def search_url(makes, inp: list) -> list:
             )
             if make["n"].lower() == inp[0]:
                 car_make = str(make["i"])
-                database += str(make["n"]) + '_'
+                database += str(make["n"]) + "_"
                 if not inp[1] == "any" or not inp[1] == "":
                     model_matcher = []
                     for model in make["models"]:
@@ -46,18 +47,18 @@ def search_url(makes, inp: list) -> list:
                         )
                         if model["m"].lower() == inp[1]:
                             car_model = str(model["v"])
-                            database += str(model["m"]).replace(' ', '-')
+                            database += str(model["m"]).replace(" ", "-")
                             break
                     if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
                         car_model = make["models"][
                             model_matcher.index(max(model_matcher))
                         ]["v"]
-                        database = str(car_model["m"]).replace(' ', '-')
+                        database = str(car_model["m"]).replace(" ", "-")
                 break
 
         if car_make == inp[0] and any(x > 0.6 for x in make_matcher):
             car_make = makes[make_matcher.index(max(make_matcher))]["i"]
-            database += str(car_make["n"]) + '_'
+            database += str(car_make["n"]) + "_"
             model_matcher = []
             for model in makes[make_matcher.index(max(make_matcher))]["models"]:
                 model_matcher.append(
@@ -65,13 +66,13 @@ def search_url(makes, inp: list) -> list:
                 )
                 if model["m"].lower() == inp[1]:
                     car_model = str(model["v"])
-                    database = str(car_model["m"]).replace(' ', '-')
+                    database = str(car_model["m"]).replace(" ", "-")
                     break
             if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
                 car_model = makes[make_matcher.index(max(make_matcher))]["models"][
                     model_matcher.index(max(model_matcher))
                 ]["v"]
-                database = str(car_model["m"]).replace(' ', '-')
+                database = str(car_model["m"]).replace(" ", "-")
 
         url_params += "&makeModelVariant1.makeId=" + car_make
         url_params += "&makeModelVariant1.modelId=" + car_model
@@ -113,7 +114,10 @@ def search_url(makes, inp: list) -> list:
     else:
         pagesnr = int(pagesnr[(len(pagesnr) - 1)].get_text())
 
-    return url, pagesnr, database
+    if db:
+        return url, pagesnr, database
+    else:
+        return url, pagesnr
 
 
 def next_page(current_url: str, current_page: int) -> str:
@@ -174,7 +178,7 @@ def get_page_listings(url: str) -> list:
 
 
 def get_car_data(url: str) -> list:
-    response = get(url+"&lang=en", headers=HEADERS)
+    response = get(url + "&lang=en", headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     # title
@@ -202,7 +206,7 @@ def get_car_data(url: str) -> list:
 
     # power
     try:
-        car_power = soup.find(id = "rbt-power-v").get_text().split("(")[1][ : -4]
+        car_power = soup.find(id="rbt-power-v").get_text().split("(")[1][:-4]
     except AttributeError:
         car_power = 0
 
@@ -210,14 +214,14 @@ def get_car_data(url: str) -> list:
     car_type = soup.find(id="rbt-category-v").get_text().split(",")[0]
 
     # fuel type
-    fuel_type = soup.find(id = "rbt-fuel-v").get_text()
+    fuel_type = soup.find(id="rbt-fuel-v").get_text()
 
     # transmission
-    transmission = soup.find(id = "rbt-transmission-v").get_text().split(" ")[0]
+    transmission = soup.find(id="rbt-transmission-v").get_text().split(" ")[0]
 
     # car color
     try:
-        color = soup.find(id = "rbt-color-v").get_text()
+        color = soup.find(id="rbt-color-v").get_text()
     except AttributeError:
         color = ""
 
