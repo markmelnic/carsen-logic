@@ -1,10 +1,12 @@
-import unittest
-import os, csv, json
+import os, csv, json, unittest
+
+from db import DB
 from settings import *
-
 from mobile_de.methods import *
+from mobile_de.scraper import *
 
 
+# tests for mobile_de methods
 class Methods(unittest.TestCase):
     def test_search(self):
         data = search(TEST_SEARCH_PARAMS, db=False)
@@ -36,13 +38,18 @@ class Methods(unittest.TestCase):
         self.assertIsNot(load_makes("mobile_de"), "" or None)
 
 
-# tests mobile_de scraper
-from mobile_de.scraper import *
-
-
+# tests for mobile_de scraper
 class Scraper(unittest.TestCase):
     def test_search_url(self):
         makes = load_makes("mobile_de")
         url, pages_number = search_url(makes, TEST_SEARCH_PARAMS, db=False)
         self.assertTrue(type(url) == str and url != "", url)
         self.assertTrue(pages_number > 0)
+
+
+# test the database
+class Database(unittest.TestCase):
+    def test_db(self):
+        db = DB()
+        self.assertTrue(db)
+        db.close_conn()
