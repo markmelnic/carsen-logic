@@ -4,7 +4,7 @@ from utils import load_makes
 from mobile_de.scraper import *
 
 # perform a detailed search of each listing
-def search(search_params: list, db=True) -> list:
+def search(search_params: list, db=False) -> list:
     makes_dict = load_makes("mobile_de")
     if db:
         current_url, pagesnr, database = search_url(makes_dict, search_params, db)
@@ -30,7 +30,7 @@ def search(search_params: list, db=True) -> list:
 
 
 # perform a surface search for the generated url
-def surface_search(search_params: list, db=True) -> list:
+def surface_search(search_params: list, db=False) -> list:
     makes_dict = load_makes("mobile_de")
     current_url, pagesnr = search_url(makes_dict, search_params, db)
 
