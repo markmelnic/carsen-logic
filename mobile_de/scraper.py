@@ -177,7 +177,7 @@ def get_page_listings(url: str) -> list:
     ]
 
 
-def get_car_data(url: str) -> list:
+def get_car_data(url: str, find_db = False) -> list:
     response = get(url + "&lang=en", headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -233,6 +233,32 @@ def get_car_data(url: str) -> list:
         ]
     except AttributeError:
         options = []
+
+    if find_db:
+        db_indexes = []
+        # find url make id
+        make_sub = "&makeModelVariant1.makeId="
+        if make_sub in url:
+            make_id = []
+            for ch in url[url.find(make_sub)+len(make_sub):]:
+                try:
+                    int(ch)
+                    make_id.append(ch)
+                except ValueError:
+                    db_indexes.append(''.join(make_id))
+                    break
+        # find url model id
+        model_sub = "&makeModelVariant1.modelId="
+        if model_sub in url:
+            model_id = []
+            for ch in url[url.find(model_sub)+len(model_sub):]:
+                try:
+                    int(ch)
+                    model_id.append(ch)
+                except ValueError:
+                    db_indexes.append(''.join(model_id))
+                    break
+        print(db_indexes)
 
     return [
         url,
