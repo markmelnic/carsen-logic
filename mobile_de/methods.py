@@ -20,8 +20,8 @@ def search(search_params: list, db=True) -> list:
 
     assert len(car_links) != 0
 
-    data = [get_car_data(link, find_db= True) for link in car_links]
-    data = scalg.score_columns(data, [2, 3, 4], [1, 0, 0])
+    data = [get_car_data(link) for link in car_links]
+    data = scalg.score_columns(data, [2, 3, 4], [0, 1, 0])
 
     if db:
         return database, data
@@ -42,7 +42,7 @@ def surface_search(search_params: list, db=True) -> list:
 
     assert data != []
 
-    data = scalg.score_columns(data, [2, 3, 4], [1, 0, 0])
+    data = scalg.score_columns(data, [2, 3, 4], [0, 1, 0])
 
     return data
 
