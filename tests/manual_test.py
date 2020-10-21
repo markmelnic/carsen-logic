@@ -12,7 +12,12 @@ import scalg, csv
 
 if __name__ == "__main__":
     parser = ArgumentParser(formatter_class=RawTextHelpFormatter)
-    parser.add_argument("test_nr", metavar="test number", type=int, help="Which test would you like to run.")
+    parser.add_argument(
+        "test_nr",
+        metavar="test number",
+        type=int,
+        help="Which test would you like to run.",
+    )
     args = parser.parse_args()
 
     if args.test_nr == 1:
@@ -21,22 +26,27 @@ if __name__ == "__main__":
         dataset = scalg.score_columns(data, [2, 3, 4], [1, 0, 0])
         for dt in dataset:
             print(dt[1:])
+
     elif args.test_nr == 2:
         dataset = search(TEST_SEARCH_PARAMS, db=True)
         for dt in dataset:
             print(dt[1:])
+
     elif args.test_nr == 3:
         dataset = surface_search(TEST_SEARCH_PARAMS)
         for dt in dataset:
             print(dt[1:])
+
     elif args.test_nr == 4:
         db = DB()
         db.close_conn()
+
     elif args.test_nr == 5:
         db = DB()
         dataset = search(TEST_SEARCH_PARAMS, db=True)
         db.add_values(dataset[0], dataset[1])
         db.close_conn()
+
     elif args.test_nr == 6:
         with open(TEST_DATA_FILE, "r") as csvfile:
             data = list(csv.reader(csvfile))
