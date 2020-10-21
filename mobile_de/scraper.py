@@ -12,8 +12,8 @@ REG_KEYS = ["New vehicle", "New car"]
 
 def search_url(makes, inp: list, db: bool) -> list:
     # what each makes index is
-    inp[0] = inp[0].lower()  # 0 - make
-    inp[1] = inp[1].lower()  # 1 - model
+    # 0 - make
+    # 1 - model
     # 2 - minprice
     # 3 - maxprice
     # 4 - minreg
@@ -24,56 +24,12 @@ def search_url(makes, inp: list, db: bool) -> list:
     # generate url parameters
     url_params = ""
 
-    # find corresponding database
-    database = ""
+    # handle make, model and database name
+    car_make, car_model, database = make_model_matcher(
+        inp[0].lower(), inp[1].lower(), makes
+    )
 
-    # handle make and model
-    car_make = inp[0]
-    car_model = inp[1]
-    if not inp[0].lower() == "any" or not inp[0] == "":
-        make_matcher = []
-        for make in makes:
-            make_matcher.append(
-                SequenceMatcher(a=make["n"].lower(), b=car_make).ratio()
-            )
-            if make["n"].lower() == inp[0]:
-                car_make = str(make["i"])
-                database += str(make["n"]) + "_"
-                if not inp[1] == "any" or not inp[1] == "":
-                    model_matcher = []
-                    for model in make["models"]:
-                        model_matcher.append(
-                            SequenceMatcher(a=model["m"].lower(), b=car_model).ratio()
-                        )
-                        if model["m"].lower() == inp[1]:
-                            car_model = str(model["v"])
-                            database += str(model["m"]).replace(" ", "-")
-                            break
-                    if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
-                        car_model = make["models"][
-                            model_matcher.index(max(model_matcher))
-                        ]["v"]
-                        database = str(car_model["m"]).replace(" ", "-")
-                break
-
-        if car_make == inp[0] and any(x > 0.6 for x in make_matcher):
-            car_make = makes[make_matcher.index(max(make_matcher))]["i"]
-            database += str(car_make["n"]) + "_"
-            model_matcher = []
-            for model in makes[make_matcher.index(max(make_matcher))]["models"]:
-                model_matcher.append(
-                    SequenceMatcher(a=model["m"].lower(), b=car_model).ratio()
-                )
-                if model["m"].lower() == inp[1]:
-                    car_model = str(model["v"])
-                    database = str(car_model["m"]).replace(" ", "-")
-                    break
-            if car_model == inp[1] and any(x > 0.6 for x in model_matcher):
-                car_model = makes[make_matcher.index(max(make_matcher))]["models"][
-                    model_matcher.index(max(model_matcher))
-                ]["v"]
-                database = str(car_model["m"]).replace(" ", "-")
-
+    if car_model == "":
         url_params += "&makeModelVariant1.makeId=" + car_make
         url_params += "&makeModelVariant1.modelId=" + car_model
     else:
@@ -120,6 +76,81 @@ def search_url(makes, inp: list, db: bool) -> list:
         return url, pagesnr
 
 
+def make_model_matcher(car_make: str, car_model: str, makes) -> list:
+    og = [car_make, car_model]
+    database = ""
+    if not og[0].lower() == "any" or not og[0] == "":
+        make_matcher = []
+        for make in makes:
+            make_matcher.append(
+                SequenceMatcher(a=make["n"].lower(), b=car_make).ratio()
+            )
+            if make["n"].lower() == og[0]:
+                car_make = str(make["i"])
+                database += str(make["n"]) + "_"
+                if not og[1] == "any" or not og[1] == "":
+                    model_matcher = []
+                    for model in make["models"]:
+                        model_matcher.append(
+                            SequenceMatcher(a=model["m"].lower(), b=car_model).ratio()
+                        )
+                        if model["m"].lower() == og[1]:
+                            car_model = str(model["v"])
+                            database += str(model["m"]).replace(" ", "-")
+                            break
+                    if car_model == og[1] and any(x > 0.6 for x in model_matcher):
+                        car_model = make["models"][
+                            model_matcher.index(max(model_matcher))
+                        ]["v"]
+                        database = str(car_model["m"]).replace(" ", "-")
+                break
+
+        if car_make == og[0] and any(x > 0.6 for x in make_matcher):
+            car_make = makes[make_matcher.index(max(make_matcher))]["i"]
+            database += str(car_make["n"]) + "_"
+            model_matcher = []
+            for model in makes[make_matcher.index(max(make_matcher))]["models"]:
+                model_matcher.append(
+                    SequenceMatcher(a=model["m"].lower(), b=car_model).ratio()
+                )
+                if model["m"].lower() == og[1]:
+                    car_model = str(model["v"])
+                    database = str(car_model["m"]).replace(" ", "-")
+                    break
+            if car_model == og[1] and any(x > 0.6 for x in model_matcher):
+                car_model = makes[make_matcher.index(max(make_matcher))]["models"][
+                    model_matcher.index(max(model_matcher))
+                ]["v"]
+                database = str(car_model["m"]).replace(" ", "-")
+    return car_make, car_model, database
+
+
+def index_db_finder(url: str):
+    db_indexes = []
+    # find url make id
+    make_sub = "&makeModelVariant1.makeId="
+    if make_sub in url:
+        make_id = []
+        for ch in url[url.find(make_sub) + len(make_sub) :]:
+            try:
+                int(ch)
+                make_id.append(ch)
+            except ValueError:
+                db_indexes.append("".join(make_id))
+                break
+    # find url model id
+    model_sub = "&makeModelVariant1.modelId="
+    if model_sub in url:
+        model_id = []
+        for ch in url[url.find(model_sub) + len(model_sub) :]:
+            try:
+                int(ch)
+                model_id.append(ch)
+            except ValueError:
+                db_indexes.append("".join(model_id))
+                break
+
+
 def next_page(current_url: str, current_page: int) -> str:
     if current_page < 10:
         return current_url[:-1] + str(current_page + 1)
@@ -160,7 +191,7 @@ def surface_data(url: str) -> list:
         except ValueError:
             mileage = 0
 
-        data.append([listing_url, title, reg, price, mileage])
+        data.append([listing_url, title, price, reg, mileage])
 
     return data
 
@@ -177,7 +208,7 @@ def get_page_listings(url: str) -> list:
     ]
 
 
-def get_car_data(url: str, find_db = False) -> list:
+def get_car_data(url: str, find_db=False) -> list:
     response = get(url + "&lang=en", headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -234,33 +265,7 @@ def get_car_data(url: str, find_db = False) -> list:
     except AttributeError:
         options = []
 
-    if find_db:
-        db_indexes = []
-        # find url make id
-        make_sub = "&makeModelVariant1.makeId="
-        if make_sub in url:
-            make_id = []
-            for ch in url[url.find(make_sub)+len(make_sub):]:
-                try:
-                    int(ch)
-                    make_id.append(ch)
-                except ValueError:
-                    db_indexes.append(''.join(make_id))
-                    break
-        # find url model id
-        model_sub = "&makeModelVariant1.modelId="
-        if model_sub in url:
-            model_id = []
-            for ch in url[url.find(model_sub)+len(model_sub):]:
-                try:
-                    int(ch)
-                    model_id.append(ch)
-                except ValueError:
-                    db_indexes.append(''.join(model_id))
-                    break
-        print(db_indexes)
-
-    return [
+    data = [
         url,
         car_title,
         int(car_price),
@@ -272,6 +277,12 @@ def get_car_data(url: str, find_db = False) -> list:
         color,
         "|".join(options),
     ]  # , car_power
+
+    if find_db:
+        database = index_db_finder(url)
+        return data, database
+    else:
+        return data
 
 
 def check_car_price(url: str) -> int:
