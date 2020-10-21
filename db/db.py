@@ -1,12 +1,12 @@
 import sqlite3
 
 from utils import load_makes
-from settings import CARS_DB, TABLE_DATA
+from settings import DB_NAME, CAR_TABLE_DATA
 
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(CARS_DB, check_same_thread=False)
+        self.conn = sqlite3.connect(DB_NAME, check_same_thread=False)
         self.cur = self.conn.cursor()
 
         # create necessary tables
@@ -16,7 +16,7 @@ class DB:
             for model in item["models"]:
                 mod = model["m"]
                 try:
-                    self.create_table(self.table_name([name, mod]), TABLE_DATA)
+                    self.create_table(self.table_name([name, mod]), CAR_TABLE_DATA)
                 except sqlite3.OperationalError:
                     pass
 

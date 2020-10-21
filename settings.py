@@ -6,8 +6,8 @@ HEADERS = {
 _MAKESJSON = "makes.json"
 
 # database settings
-CARS_DB = "db.sqlite3"
-TABLE_DATA = [
+DB_NAME = "db.sqlite3"
+CAR_TABLE_DATA = [
     ("url", "TEXT"),
     ("title", "TEXT"),
     ("price", "REAL"),
