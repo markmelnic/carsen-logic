@@ -3,14 +3,14 @@ from requests import get
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 
-from settings import HEADERS
+from settings import HEADERS, MATCH_RATIO, _MDE_MAKES_DICT
 
 BASE_URL = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_DAMAGE_UNREPAIRED&isSearchRequest=true&scopeId=C&sfmr=false"
 PRICE_KEYS = ["Gross"]
 REG_KEYS = ["New vehicle", "New car"]
 
 
-def search_url(makes, inp: list, db: bool) -> list:
+def search_url(inp: list, db: bool) -> list:
     # what each makes index is
     # 0 - make
     # 1 - model
@@ -26,7 +26,7 @@ def search_url(makes, inp: list, db: bool) -> list:
 
     # handle make, model and database name
     car_make, car_model, database = make_model_matcher(
-        inp[0].lower(), inp[1].lower(), makes
+        inp[0].lower(), inp[1].lower()
     )
 
     if car_model == "":
@@ -76,12 +76,12 @@ def search_url(makes, inp: list, db: bool) -> list:
         return url, pagesnr
 
 
-def make_model_matcher(car_make: str, car_model: str, makes) -> list:
+def make_model_matcher(car_make: str, car_model: str) -> list:
     og = [car_make, car_model]
     database = ""
     if not og[0].lower() == "any" or not og[0] == "":
         make_matcher = []
-        for make in makes:
+        for make in _MDE_MAKES_DICT:
             make_matcher.append(
                 SequenceMatcher(a=make["n"].lower(), b=car_make).ratio()
             )
@@ -98,18 +98,18 @@ def make_model_matcher(car_make: str, car_model: str, makes) -> list:
                             car_model = str(model["v"])
                             database += str(model["m"]).replace(" ", "-")
                             break
-                    if car_model == og[1] and any(x > 0.6 for x in model_matcher):
+                    if car_model == og[1] and any(x > MATCH_RATIO for x in model_matcher):
                         car_model = make["models"][
                             model_matcher.index(max(model_matcher))
                         ]["v"]
                         database = str(car_model["m"]).replace(" ", "-")
                 break
 
-        if car_make == og[0] and any(x > 0.6 for x in make_matcher):
-            car_make = makes[make_matcher.index(max(make_matcher))]["i"]
+        if car_make == og[0] and any(x > MATCH_RATIO for x in make_matcher):
+            car_make = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["i"]
             database += str(car_make["n"]) + "_"
             model_matcher = []
-            for model in makes[make_matcher.index(max(make_matcher))]["models"]:
+            for model in _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["models"]:
                 model_matcher.append(
                     SequenceMatcher(a=model["m"].lower(), b=car_model).ratio()
                 )
@@ -117,15 +117,15 @@ def make_model_matcher(car_make: str, car_model: str, makes) -> list:
                     car_model = str(model["v"])
                     database = str(car_model["m"]).replace(" ", "-")
                     break
-            if car_model == og[1] and any(x > 0.6 for x in model_matcher):
-                car_model = makes[make_matcher.index(max(make_matcher))]["models"][
+            if car_model == og[1] and any(x > MATCH_RATIO for x in model_matcher):
+                car_model = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["models"][
                     model_matcher.index(max(model_matcher))
                 ]["v"]
                 database = str(car_model["m"]).replace(" ", "-")
     return car_make, car_model, database
 
 
-def index_db_finder(url: str):
+def index_db_finder(url: str) -> str:
     db_indexes = []
     # find url make id
     make_sub = "&makeModelVariant1.makeId="
@@ -149,6 +149,21 @@ def index_db_finder(url: str):
             except ValueError:
                 db_indexes.append("".join(model_id))
                 break
+
+    og = [db_indexes[0], db_indexes[1]]
+    database = ""
+    if not og[0] == 0 or not og[0] == "":
+        for make in _MDE_MAKES_DICT:
+            if make["i"] == og[0]:
+                database += str(make["n"]) + "_"
+                if not og[1] == 0 or not og[1] == "":
+                    for model in make["models"]:
+                        if model["v"] == og[1]:
+                            database += str(model["m"]).replace(" ", "-")
+                            break
+                break
+
+    return database
 
 
 def next_page(current_url: str, current_page: int) -> str:
