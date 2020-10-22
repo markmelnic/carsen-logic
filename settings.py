@@ -30,7 +30,6 @@ CAR_TABLE_DATA = [
     ("score", "REAL"),
 ]
 
-
 # test settings
 TEST_MAKESJSON = "tests/test_data/makes_test_copy.json"
 TEST_DATA_FILE = "tests/test_data/data.csv"

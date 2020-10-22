@@ -3,7 +3,7 @@ from requests import get
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 
-from settings import HEADERS, MATCH_RATIO, REG_KEYS, PRICE_KEYS, _MDE_MAKES_DICT
+from settings import HEADERS, BASE_URL, MATCH_RATIO, REG_KEYS, PRICE_KEYS, _MDE_MAKES_DICT
 
 
 def search_url(inp: list, db: bool) -> list:
@@ -25,7 +25,7 @@ def search_url(inp: list, db: bool) -> list:
         inp[0].lower(), inp[1].lower()
     )
 
-    if car_model == "":
+    if car_model != "" or car_model != 0:
         url_params += "&makeModelVariant1.makeId=" + car_make
         url_params += "&makeModelVariant1.modelId=" + car_model
     else:
@@ -83,7 +83,7 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
             )
             if make["n"].lower() == og[0]:
                 car_make = str(make["i"])
-                database += str(make["n"]) + "_"
+                database += str(make["n"]).replace(" ", "-") + "_"
                 if not og[1] == "any" or not og[1] == "":
                     model_matcher = []
                     for model in make["models"]:
@@ -103,7 +103,7 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
 
         if car_make == og[0] and any(x > MATCH_RATIO for x in make_matcher):
             car_make = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["i"]
-            database += str(car_make["n"]) + "_"
+            database += str(car_make["n"]).replace(" ", "-") + "_"
             model_matcher = []
             for model in _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["models"]:
                 model_matcher.append(
@@ -151,7 +151,7 @@ def index_db_finder(url: str) -> str:
     if not og[0] == 0 or not og[0] == "":
         for make in _MDE_MAKES_DICT:
             if make["i"] == og[0]:
-                database += str(make["n"]) + "_"
+                database += str(make["n"]).replace(" ", "-") + "_"
                 if not og[1] == 0 or not og[1] == "":
                     for model in make["models"]:
                         if model["v"] == og[1]:

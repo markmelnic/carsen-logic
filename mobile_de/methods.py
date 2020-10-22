@@ -18,7 +18,7 @@ def search(search_params: list, db=False) -> list:
 
     assert len(car_links) != 0
 
-    data = [get_car_data(link) for link in car_links]
+    data = [get_car_data(link + "&lang=en") for link in car_links]
     data = scalg.score_columns(data, [2, 3, 4], [0, 1, 0])
 
     if db:
