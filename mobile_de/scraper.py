@@ -3,11 +3,7 @@ from requests import get
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 
-from settings import HEADERS, MATCH_RATIO, _MDE_MAKES_DICT
-
-BASE_URL = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_DAMAGE_UNREPAIRED&isSearchRequest=true&scopeId=C&sfmr=false"
-PRICE_KEYS = ["Gross"]
-REG_KEYS = ["New vehicle", "New car"]
+from settings import HEADERS, MATCH_RATIO, REG_KEYS, PRICE_KEYS, _MDE_MAKES_DICT
 
 
 def search_url(inp: list, db: bool) -> list:
@@ -224,7 +220,7 @@ def get_page_listings(url: str) -> list:
 
 
 def get_car_data(url: str, find_db=False) -> list:
-    response = get(url + "&lang=en", headers=HEADERS)
+    response = get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     # title
@@ -301,7 +297,7 @@ def get_car_data(url: str, find_db=False) -> list:
 
 
 def check_car_price(url: str) -> int:
-    response = get(url + "&lang=en", headers=HEADERS)
+    response = get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     try:
