@@ -12,7 +12,7 @@ def search(search_params: list, db=False) -> list:
     # get links
     car_links = []
     for i in range(pagesnr):
-        for link in get_page_listings(current_url):
+        for link in get_page_listings(current_url + "&lang=en"):
             car_links.append(link)
         current_url = next_page(current_url, i + 1)
 
@@ -29,11 +29,14 @@ def search(search_params: list, db=False) -> list:
 
 # perform a surface search for the generated url
 def surface_search(search_params: list, db=False) -> list:
-    current_url, pagesnr = search_url(search_params, db)
+    if db:
+        current_url, pagesnr, database = search_url(search_params, db)
+    else:
+        current_url, pagesnr = search_url(search_params, db)
 
     data = []
     for i in range(pagesnr):
-        for item in surface_data(current_url):
+        for item in surface_data(current_url + "&lang=en"):
             data.append(item)
         current_url = next_page(current_url, i + 1)
 
@@ -41,7 +44,10 @@ def surface_search(search_params: list, db=False) -> list:
 
     data = scalg.score_columns(data, [2, 3, 4], [0, 1, 0])
 
-    return data
+    if db:
+        return data, database
+    else:
+        return data
 
 
 # existing searches checker
@@ -49,7 +55,7 @@ def checker(data: list) -> list:
     changed = False
     car_urls = [d[0] for d in data]
     for link in car_urls:
-        new_price = check_car_price(link)
+        new_price = check_car_price(link + "&lang=en")
         if not float(new_price) == float(data[car_urls.index(link)][2]):
             changed = True
             data[car_urls.index(link)][2] = new_price
