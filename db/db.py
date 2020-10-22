@@ -1,7 +1,6 @@
 import sqlite3
 
-from utils import load_makes
-from settings import DB_NAME, CAR_TABLE_DATA
+from settings import _MDE_MAKES_DICT, DB_NAME, CAR_TABLE_DATA
 
 
 class DB:
@@ -10,8 +9,7 @@ class DB:
         self.cur = self.conn.cursor()
 
         # create necessary tables
-        makes = load_makes("mobile_de")
-        for item in makes:
+        for item in _MDE_MAKES_DICT:
             name = item["n"]
             for model in item["models"]:
                 mod = model["m"]

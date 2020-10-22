@@ -41,8 +41,7 @@ class Methods(unittest.TestCase):
 # tests for mobile_de scraper
 class Scraper(unittest.TestCase):
     def test_search_url(self):
-        makes = load_makes("mobile_de")
-        url, pages_number = search_url(makes, TEST_SEARCH_PARAMS, db=False)
+        url, pages_number = search_url(TEST_SEARCH_PARAMS, db=False)
         self.assertTrue(type(url) == str and url != "", url)
         self.assertTrue(pages_number > 0)
 

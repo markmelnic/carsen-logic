@@ -1,15 +1,13 @@
 import scalg
 
-from utils import load_makes
 from mobile_de.scraper import *
 
 # perform a detailed search of each listing
 def search(search_params: list, db=False) -> list:
-    makes_dict = load_makes("mobile_de")
     if db:
-        current_url, pagesnr, database = search_url(makes_dict, search_params, db)
+        current_url, pagesnr, database = search_url(search_params, db)
     else:
-        current_url, pagesnr = search_url(makes_dict, search_params, db)
+        current_url, pagesnr = search_url(search_params, db)
 
     # get links
     car_links = []
@@ -31,8 +29,7 @@ def search(search_params: list, db=False) -> list:
 
 # perform a surface search for the generated url
 def surface_search(search_params: list, db=False) -> list:
-    makes_dict = load_makes("mobile_de")
-    current_url, pagesnr = search_url(makes_dict, search_params, db)
+    current_url, pagesnr = search_url(search_params, db)
 
     data = []
     for i in range(pagesnr):
