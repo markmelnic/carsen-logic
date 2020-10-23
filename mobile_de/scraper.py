@@ -97,13 +97,15 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                     if car_model == og[1] and any(x > MATCH_RATIO for x in model_matcher):
                         car_model = make["models"][
                             model_matcher.index(max(model_matcher))
-                        ]["v"]
+                        ]
                         database = str(car_model["m"]).replace(" ", "-")
+                        car_model = car_model["v"]
                 break
 
         if car_make == og[0] and any(x > MATCH_RATIO for x in make_matcher):
-            car_make = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["i"]
+            car_make = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]
             database += str(car_make["n"]).replace(" ", "-") + "_"
+            car_make = car_make["i"]
             model_matcher = []
             for model in _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["models"]:
                 model_matcher.append(
@@ -111,13 +113,14 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                 )
                 if model["m"].lower() == og[1]:
                     car_model = str(model["v"])
-                    database = str(car_model["m"]).replace(" ", "-")
+                    database = str(model["m"]).replace(" ", "-")
                     break
             if car_model == og[1] and any(x > MATCH_RATIO for x in model_matcher):
                 car_model = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["models"][
                     model_matcher.index(max(model_matcher))
-                ]["v"]
+                ]
                 database = str(car_model["m"]).replace(" ", "-")
+                car_model = car_model["v"]
     return car_make, car_model, database
 
 
