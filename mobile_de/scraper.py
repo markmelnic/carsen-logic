@@ -94,7 +94,7 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                             car_model = str(model["v"])
                             database += str(model["m"]).replace(" ", "-")
                             break
-                    if car_model == og[1] and any(x > MATCH_RATIO for x in model_matcher):
+                    if car_model == og[1] and any(x for x in model_matcher if x > MATCH_RATIO):
                         car_model = make["models"][
                             model_matcher.index(max(model_matcher))
                         ]
@@ -102,7 +102,7 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                         car_model = car_model["v"]
                 break
 
-        if car_make == og[0] and any(x > MATCH_RATIO for x in make_matcher):
+        if car_make == og[0] and any(x for x in make_matcher if x > MATCH_RATIO):
             car_make = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]
             database += str(car_make["n"]).replace(" ", "-") + "_"
             car_make = car_make["i"]
@@ -115,7 +115,7 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                     car_model = str(model["v"])
                     database = str(model["m"]).replace(" ", "-")
                     break
-            if car_model == og[1] and any(x > MATCH_RATIO for x in model_matcher):
+            if car_model == og[1] and any(x for x in model_matcher if x > MATCH_RATIO):
                 car_model = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["models"][
                     model_matcher.index(max(model_matcher))
                 ]
