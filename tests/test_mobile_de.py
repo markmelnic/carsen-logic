@@ -32,7 +32,7 @@ class Methods(unittest.TestCase):
         try:
             makes = load_makes("mobile_de")
         except json.decoder.JSONDecodeError:
-            os.remove(_MAKESJSON)
+            os.remove(_MAKES_JSON)
         except FileNotFoundError:
             self.skipTest("Makes json file not found.")
         self.assertIsNot(load_makes("mobile_de"), "" or None)
