@@ -19,34 +19,34 @@ if __name__ == "__main__":
         help="Which test would you like to run.",
     )
     args = parser.parse_args()
-
+    # test data scoring
     if args.test_nr == 1:
         with open(TEST_DATA_FILE, "r") as csvfile:
             data = list(csv.reader(csvfile))
         dataset = scalg.score_columns(data, [2, 3, 4], [1, 0, 0])
         for dt in dataset:
             print(dt[1:])
-
+    # test search and print output
     elif args.test_nr == 2:
         dataset = search(TEST_SEARCH_PARAMS, db=True)
         for dt in dataset:
             print(dt[1:])
-
+    # run a surface search and print output
     elif args.test_nr == 3:
         dataset = surface_search(TEST_SEARCH_PARAMS)
         for dt in dataset:
             print(dt[1:])
-
+    # test database creation
     elif args.test_nr == 4:
         db = DB()
         db.close_conn()
-
+    # test database creation and add values from test search
     elif args.test_nr == 5:
         db = DB()
         dataset = search(TEST_SEARCH_PARAMS, db=True)
         db.add_values(dataset[0], dataset[1])
         db.close_conn()
-
+    # run the checker to see data changes
     elif args.test_nr == 6:
         with open(TEST_DATA_FILE, "r") as csvfile:
             data = list(csv.reader(csvfile))

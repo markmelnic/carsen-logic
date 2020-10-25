@@ -14,7 +14,8 @@ class Utilities(unittest.TestCase):
             self.skipTest("Makes json file not found.")
         self.assertIsNot(load_makes("mobile_de"), "" or None)
 
-# test the database
+
+# database tests
 class Database(unittest.TestCase):
     def test_db(self):
         db = DB()

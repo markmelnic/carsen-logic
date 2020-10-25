@@ -4,7 +4,7 @@ from settings import *
 from mobile_de.methods import *
 from mobile_de.scraper import *
 
-# tests for mobile_de methods
+# test mobile_de methods
 class Methods(unittest.TestCase):
     def test_search(self):
         data = search(TEST_SEARCH_PARAMS, db=False)
@@ -27,7 +27,7 @@ class Methods(unittest.TestCase):
             pass
 
 
-# tests for mobile_de scraper
+# test mobile_de scraper
 class Scraper(unittest.TestCase):
     def test_search_url(self):
         url, pages_number = search_url(TEST_SEARCH_PARAMS, db=False)
