@@ -1,5 +1,6 @@
 import sqlite3
 
+from utils import table_name
 from settings import _MDE_MAKES_DICT, DB_NAME, CAR_TABLE_DATA
 
 
@@ -14,7 +15,7 @@ class DB:
             for model in item["models"]:
                 mod = model["m"]
                 try:
-                    self.create_table(self.table_name([name, mod]), CAR_TABLE_DATA)
+                    self.create_table(table_name([name, mod]), CAR_TABLE_DATA)
                 except sqlite3.OperationalError:
                     pass
 
@@ -28,18 +29,6 @@ class DB:
         self.cur.execute(query)
         self.conn.commit()
 
-    def table_name(self, title_data) -> str:
-        if type(title_data) == list:
-            return (
-                '"'
-                + title_data[0].replace(" ", "-")
-                + "_"
-                + title_data[1].replace(" ", "-")
-                + '"'
-            )
-        elif "_" in title_data:
-            return '"' + title_data + '"'
-
     def add_value(self, table: str, values: tuple):
         query = "INSERT INTO %s VALUES %s" % (table, str(values))
         self.cur.execute(query)
@@ -51,7 +40,7 @@ class DB:
             qlen += "?"
             if not i == len(values[0]) - 1:
                 qlen += ", "
-        query = "INSERT INTO %s VALUES (%s)" % (self.table_name(table), qlen)
+        query = "INSERT INTO %s VALUES (%s)" % (table_name(table), qlen)
         self.cur.executemany(query, values)
         self.conn.commit()
 
