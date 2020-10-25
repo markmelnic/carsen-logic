@@ -3,7 +3,14 @@ from requests import get
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 
-from settings import HEADERS, BASE_URL, MATCH_RATIO, REG_KEYS, PRICE_KEYS, _MDE_MAKES_DICT
+from settings import (
+    HEADERS,
+    BASE_URL,
+    MATCH_RATIO,
+    REG_KEYS,
+    PRICE_KEYS,
+    _MDE_MAKES_DICT,
+)
 
 
 def search_url(inp: list, db: bool) -> list:
@@ -21,9 +28,7 @@ def search_url(inp: list, db: bool) -> list:
     url_params = ""
 
     # handle make, model and database name
-    car_make, car_model, database = make_model_matcher(
-        inp[0].lower(), inp[1].lower()
-    )
+    car_make, car_model, database = make_model_matcher(inp[0].lower(), inp[1].lower())
 
     if car_model != "" or car_model != 0:
         url_params += "&makeModelVariant1.makeId=" + car_make
@@ -94,7 +99,9 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                             car_model = str(model["v"])
                             database += str(model["m"]).replace(" ", "-")
                             break
-                    if car_model == og[1] and any(x for x in model_matcher if x > MATCH_RATIO):
+                    if car_model == og[1] and any(
+                        x for x in model_matcher if x > MATCH_RATIO
+                    ):
                         car_model = make["models"][
                             model_matcher.index(max(model_matcher))
                         ]
@@ -107,7 +114,9 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
             database += str(car_make["n"]).replace(" ", "-") + "_"
             car_make = car_make["i"]
             model_matcher = []
-            for model in _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["models"]:
+            for model in _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))][
+                "models"
+            ]:
                 model_matcher.append(
                     SequenceMatcher(a=model["m"].lower(), b=car_model).ratio()
                 )
@@ -116,9 +125,9 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                     database = str(model["m"]).replace(" ", "-")
                     break
             if car_model == og[1] and any(x for x in model_matcher if x > MATCH_RATIO):
-                car_model = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))]["models"][
-                    model_matcher.index(max(model_matcher))
-                ]
+                car_model = _MDE_MAKES_DICT[make_matcher.index(max(make_matcher))][
+                    "models"
+                ][model_matcher.index(max(model_matcher))]
                 database = str(car_model["m"]).replace(" ", "-")
                 car_model = car_model["v"]
     return car_make, car_model, database
