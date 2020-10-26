@@ -19,15 +19,9 @@ if __name__ == "__main__":
         help="Which test would you like to run.",
     )
     args = parser.parse_args()
-    # test data scoring
-    if args.test_nr == 1:
-        with open(TEST_DATA_FILE, "r") as csvfile:
-            data = list(csv.reader(csvfile))
-        dataset = scalg.score_columns(data, [2, 3, 4], [1, 0, 0])
-        for dt in dataset:
-            print(dt[1:])
+
     # test search and print output
-    elif args.test_nr == 2:
+    if args.test_nr == 2:
         dataset = search(TEST_SEARCH_PARAMS, db=True)
         for dt in dataset:
             print(dt[1:])
