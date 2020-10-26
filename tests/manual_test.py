@@ -7,7 +7,7 @@ sys.path.insert(0, parentdir)
 
 from db import DB
 from mobile_de.methods import search, surface_search, checker
-from settings import TEST_DATA_FILE, TEST_SEARCH_PARAMS
+from settings import TEST_SEARCH_PARAMS
 import scalg, csv
 
 if __name__ == "__main__":
