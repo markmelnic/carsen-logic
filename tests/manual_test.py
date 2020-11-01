@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     # test search and print output
     if args.test_nr == 2:
-        dataset = search(TEST_SEARCH_PARAMS, db=True)
+        dataset = search(TEST_SEARCH_PARAMS, db=False)
         for dt in dataset:
             print(dt[1:])
     # run a surface search and print output
@@ -42,8 +42,7 @@ if __name__ == "__main__":
         db.close_conn()
     # run the checker to see data changes
     elif args.test_nr == 6:
-        with open(TEST_DATA_FILE, "r") as csvfile:
-            data = list(csv.reader(csvfile))
+        dataset = search(TEST_SEARCH_PARAMS, db=False)
         try:
             checker(data)
         except AssertionError:
