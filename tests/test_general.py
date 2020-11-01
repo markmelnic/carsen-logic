@@ -7,12 +7,13 @@ from settings import *
 class Utilities(unittest.TestCase):
     def test_makes_json(self):
         try:
-            makes = load_makes("mobile_de")
+            from settings import _MDE_MAKES_DICT
+            self.assertIsNot(_MDE_MAKES_DICT, "" or None)
         except json.decoder.JSONDecodeError:
-            os.remove(_MAKES_JSON)
+            pass
+            # os.remove(_MAKES_JSON)
         except FileNotFoundError:
             self.skipTest("Makes json file not found.")
-        self.assertIsNot(load_makes("mobile_de"), "" or None)
 
 
 # database tests
