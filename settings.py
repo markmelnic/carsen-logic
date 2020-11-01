@@ -23,6 +23,7 @@ CAR_TABLE_DATA = [
     ("registration", "REAL"),
     ("mileage", "REAL"),
     ("type", "TEXT"),
+    ("location", "TEXT"),
     ("fuel", "TEXT"),
     ("transmission", "TEXT"),
     ("color", "TEXT"),
