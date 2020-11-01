@@ -1,18 +1,18 @@
-import json
-from difflib import SequenceMatcher
+from json import loads
 
 # load makes and models from json file
 def load_makes(website: str, _MAKES_JSON: str) -> dict:
     with open(_MAKES_JSON, "r", encoding="utf-8", newline="") as mjson:
         data = mjson.read()
-        makes_dict = json.loads(data)
+        makes_dict = loads(data)
         makes_dict = makes_dict[website]
     return makes_dict
 
 
+from difflib import SequenceMatcher
 from settings import _MDE_MAKES_DICT, MATCH_RATIO
 
-
+# generate db table name
 def table_name(title_data) -> str:
     if type(title_data) == list:
         return (
@@ -25,7 +25,7 @@ def table_name(title_data) -> str:
     elif "_" in title_data:
         return '"' + title_data + '"'
 
-
+# match make and model for corresponding ids and db table
 def make_model_matcher(car_make: str, car_model: str) -> list:
     og = [car_make, car_model]
     database = ""
@@ -81,7 +81,7 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                 car_model = car_model["v"]
     return car_make, car_model, database
 
-
+# find make and model id from url and return table name
 def index_db_finder(url: str) -> str:
     db_indexes = []
     # find url make id

@@ -42,7 +42,7 @@ if __name__ == "__main__":
         db.close_conn()
     # run the checker to see data changes
     elif args.test_nr == 6:
-        dataset = search(TEST_SEARCH_PARAMS, db=False)
+        data = search(TEST_SEARCH_PARAMS, db=False)
         try:
             checker(data)
         except AssertionError:
