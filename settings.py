@@ -8,7 +8,7 @@ HEADERS = {
 MATCH_RATIO = 0.6
 
 _MAKES_JSON = "makes.json"
-_MDE_MAKES_DICT = load_makes("mobile_de")
+_MDE_MAKES_DICT = load_makes("mobile_de", _MAKES_JSON)
 
 BASE_URL = "https://suchen.mobile.de/fahrzeuge/search.html?damageUnrepaired=NO_DAMAGE_UNREPAIRED&isSearchRequest=true&scopeId=C&sfmr=false"
 PRICE_KEYS = ["Gross"]
@@ -32,5 +32,4 @@ CAR_TABLE_DATA = [
 ]
 
 # test settings
-TEST_MAKESJSON = "tests/test_data/makes_test_copy.json"
 TEST_SEARCH_PARAMS = ["Lexus", "LC 500h", "", "", "", "", "", ""]
