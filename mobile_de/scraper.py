@@ -169,7 +169,7 @@ def get_car_data(url: str, find_db=False) -> list:
     car_type = soup.find(id="rbt-category-v").get_text().split(",")[0]
 
     # location
-    location = soup.find(id = "rbt-seller-address").get_text().replace("\xa0", " ")
+    location = soup.find(id="rbt-seller-address").get_text().replace("\xa0", " ")
 
     # fuel type
     fuel_type = soup.find(id="rbt-fuel-v").get_text()
@@ -198,13 +198,14 @@ def get_car_data(url: str, find_db=False) -> list:
         int(car_price),
         int(car_reg),
         int(car_mileage),
+        # int(car_power),
         car_type,
         location,
         fuel_type,
         transmission,
-        color,
+        # color,
         "|".join(options),
-    ]  # , car_power
+    ]
 
     if find_db:
         database = index_db_finder(url)
