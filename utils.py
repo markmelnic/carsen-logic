@@ -1,4 +1,6 @@
 from json import loads
+from requests import get
+from bs4 import BeautifulSoup
 
 # load makes and models from json file
 def load_makes(website: str, _MAKES_JSON: str) -> dict:
@@ -10,7 +12,7 @@ def load_makes(website: str, _MAKES_JSON: str) -> dict:
 
 
 from difflib import SequenceMatcher
-from settings import _MDE_MAKES_DICT, MATCH_RATIO
+from settings import _MDE_MAKES_DICT, MATCH_RATIO, HEADERS
 
 # generate db table name
 def table_name(title_data) -> str:
@@ -24,6 +26,7 @@ def table_name(title_data) -> str:
         )
     elif "_" in title_data:
         return '"' + title_data + '"'
+
 
 # match make and model for corresponding ids and db table
 def make_model_matcher(car_make: str, car_model: str) -> list:
@@ -79,7 +82,8 @@ def make_model_matcher(car_make: str, car_model: str) -> list:
                 ][model_matcher.index(max(model_matcher))]
                 database = str(car_model["m"]).replace(" ", "-")
                 car_model = car_model["v"]
-    return car_make, car_model, database
+    return car_make, car_model, table_name(database)
+
 
 # find make and model id from url and return table name
 def index_db_finder(url: str) -> str:
@@ -107,17 +111,44 @@ def index_db_finder(url: str) -> str:
                 db_indexes.append("".join(model_id))
                 break
 
-    og = [db_indexes[0], db_indexes[1]]
-    database = ""
-    if not og[0] == 0 or not og[0] == "":
-        for make in _MDE_MAKES_DICT:
-            if make["i"] == og[0]:
-                database += str(make["n"]).replace(" ", "-") + "_"
-                if not og[1] == 0 or not og[1] == "":
-                    for model in make["models"]:
-                        if model["v"] == og[1]:
-                            database += str(model["m"]).replace(" ", "-")
-                            break
-                break
+    return index_to_dbname(db_indexes[0], db_indexes[1])
 
-    return database
+
+def index_db_finder_js(url: str) -> str:
+    response = get(url, headers=HEADERS)
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    scripts = soup.find_all("script")
+    for s in scripts:
+        contents = s.get_text()
+        if "setAdData({" in contents:
+            make_id = ""
+            make_id_text = "adSpecificsMakeId"
+            for ch in contents[contents.find(make_id_text)+len(make_id_text)+2:]:
+                if not ch == ",":
+                    make_id += ch
+                else:
+                    break
+
+            model_id = ""
+            model_id_text = "adSpecificsModelId"
+            for ch in contents[contents.find(model_id_text)+len(model_id_text)+2:]:
+                if not ch == ",":
+                    model_id += ch
+                else:
+                    break
+
+            return index_to_dbname(make_id, model_id)
+
+
+def index_to_dbname(make_id, model_id):
+    database = ""
+    if not make_id == 0 or not make_id == "":
+        for make in _MDE_MAKES_DICT:
+            if make["i"] == make_id:
+                database += str(make["n"]).replace(" ", "-") + "_"
+                if not model_id == 0 or not model_id == "":
+                    for model in make["models"]:
+                        if model["v"] == model_id:
+                            database += str(model["m"]).replace(" ", "-")
+                            return table_name(database)

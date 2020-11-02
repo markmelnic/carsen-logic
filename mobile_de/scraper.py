@@ -2,7 +2,7 @@ from datetime import datetime
 from requests import get
 from bs4 import BeautifulSoup
 
-from utils import make_model_matcher, index_db_finder
+from utils import make_model_matcher, index_db_finder, index_db_finder_js
 from settings import (
     HEADERS,
     BASE_URL,
@@ -208,8 +208,12 @@ def get_car_data(url: str, find_db=False) -> list:
     ]
 
     if find_db:
-        database = index_db_finder(url)
-        return data, database
+        try:
+            database = index_db_finder(url)
+        except IndexError:
+            database = index_db_finder_js(url)
+        finally:
+            return data, database
     else:
         return data
 
