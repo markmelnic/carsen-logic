@@ -1,6 +1,6 @@
 import os, json, unittest
 
-from db import DB
+from database import DB
 from settings import *
 
 # test utilities
