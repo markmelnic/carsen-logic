@@ -137,13 +137,13 @@ def get_data(url: str, find_db=False) -> list:
     if url.find("scopeId=C") != -1:
         data = get_car_data(url)
     elif url.find("scopeId=MB") != -1:
-        return #motorbike
+        return  # motorbike
     elif url.find("scopeId=MH") != -1:
-        return #motor home and caravan
+        return  # motor home and caravan
     else:
         return
 
-    if find_db:
+    if find_db and not data == None:
         try:
             database = index_db_finder(url)
         except IndexError:
@@ -154,9 +154,15 @@ def get_data(url: str, find_db=False) -> list:
         return data
 
 
-def get_car_data(url: str, find_db=False) -> list:
-    response = get(url, headers=HEADERS)
+def get_car_data(url: str) -> list:
+    response = get(url + "&lang=en", headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
+
+    # check if ad is still available
+    try:
+        soup.find(id="rbt-ad-title").get_text()
+    except AttributeError:
+        return
 
     # title
     car_title = soup.find(id="rbt-ad-title").get_text()
@@ -179,7 +185,11 @@ def get_car_data(url: str, find_db=False) -> list:
         car_reg = int(car_reg[3:])
 
     # mileage
-    car_mileage = soup.find(id="rbt-mileage-v").get_text().replace(".", "")[:-3]
+    try:
+        car_mileage = soup.find(id="rbt-mileage-v").get_text().replace(".", "")[:-3]
+    except AttributeError:
+        if car_reg == datetime.now().year:
+            car_mileage = 0
 
     # power
     try:
@@ -220,7 +230,7 @@ def get_car_data(url: str, find_db=False) -> list:
     except AttributeError:
         options = []
 
-    data = [
+    return [
         url,
         car_title,
         int(car_price),
@@ -237,16 +247,14 @@ def get_car_data(url: str, find_db=False) -> list:
 
 
 def check_car_price(url: str) -> int:
-    response = get(url, headers=HEADERS)
+    response = get(url + "&lang=en", headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     try:
-        car_price = soup.find(class_="h3 rbt-prime-price").get_text().replace(".", "")
+        car_price = soup.find(class_="h3 rbt-prime-price").get_text().replace(",", "")
+        if any(keyword in car_price for keyword in PRICE_KEYS):
+            return int(car_price[1:-8])
+        else:
+            return int(car_price[1:])
     except AttributeError:
-        return False
-
-    car_price = soup.find(class_="h3 rbt-prime-price").get_text().replace(",", "")
-    if any(keyword in car_price for keyword in PRICE_KEYS):
-        return int(car_price[1:-8])
-    else:
-        return int(car_price[1:])
+        return
