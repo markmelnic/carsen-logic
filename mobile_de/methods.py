@@ -43,6 +43,7 @@ def surface_search(search_params: list, db=False) -> list:
     assert data != []
 
     data = scalg.score_columns(data, [2, 3, 4], [0, 1, 0])
+    data.sort(key=lambda d: d[-1])
 
     if db:
         return data, database

@@ -94,7 +94,10 @@ def surface_data(url: str) -> list:
     for listing in listings:
         listing_url = listing["href"]
 
-        image = listing.find(class_="img-responsive")["href"]
+        try:
+            image = listing.find(class_="img-responsive")["src"]
+        except KeyError:
+            image = listing.find(class_="img-responsive")["data-src"]
 
         title = listing.find(class_="h3 u-text-break-word").get_text()
         price = int(
