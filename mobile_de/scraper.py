@@ -83,7 +83,7 @@ def next_page(current_url: str, current_page: int) -> str:
 
 
 def surface_data(url: str) -> list:
-    response = get(url, headers=HEADERS)
+    response = get(url + "&lang=en", headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     listings = soup.find_all(
@@ -93,6 +93,9 @@ def surface_data(url: str) -> list:
     data = []
     for listing in listings:
         listing_url = listing["href"]
+
+        image = listing.find(class_="img-responsive")["href"]
+
         title = listing.find(class_="h3 u-text-break-word").get_text()
         price = int(
             listing.find(class_="h3 u-block")
@@ -115,7 +118,7 @@ def surface_data(url: str) -> list:
         except ValueError:
             mileage = 0
 
-        data.append([listing_url, title, price, reg, mileage])
+        data.append([listing_url, title, price, reg, mileage, image])
 
     return data
 
