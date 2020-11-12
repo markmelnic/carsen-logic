@@ -54,7 +54,7 @@ def search_url(inp: list, db: bool) -> list:
     if not inp[7] == "" or not inp[7] == 0:
         url_params += "&maxMileage=" + str(inp[7])
 
-    url = BASE_URL + url_params + "&pageNumber=1&lang=en"
+    url = BASE_URL + url_params + "&lang=en&pageNumber=1"
 
     # check number of pages
     response = get(url, headers=HEADERS)
@@ -83,7 +83,7 @@ def next_page(current_url: str, current_page: int) -> str:
 
 
 def surface_data(url: str) -> list:
-    response = get(url + "&lang=en", headers=HEADERS)
+    response = get(url, headers=HEADERS)
     soup = BeautifulSoup(response.content, "html.parser")
 
     listings = soup.find_all(
@@ -98,6 +98,8 @@ def surface_data(url: str) -> list:
             image = listing.find(class_="img-responsive")["src"]
         except KeyError:
             image = listing.find(class_="img-responsive")["data-src"]
+        except TypeError:
+            image = ""
 
         title = listing.find(class_="h3 u-text-break-word").get_text()
         price = int(

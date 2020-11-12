@@ -45,10 +45,17 @@ def surface_search(search_params: list, db=False) -> list:
     data = scalg.score_columns(data, [2, 3, 4], [0, 1, 0])
     data.sort(key=lambda d: d[-1])
 
-    if db:
-        return data, database
-    else:
-        return data
+    undup = []
+    undup_indexes = []
+    for i, d in enumerate(data):
+        if d[-1] in undup:
+            undup_indexes.append(i)
+        else:
+            undup.append(d[-1])
+    for i in sorted(undup_indexes, reverse=True):
+        del data[i]
+
+    return data, database if db else data
 
 
 # existing searches checker
