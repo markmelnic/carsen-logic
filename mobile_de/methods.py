@@ -21,10 +21,7 @@ def search(search_params: list, db=False) -> list:
     data = [get_data(link) for link in car_links]
     data = scalg.score_columns(data, [2, 3, 4], [0, 1, 0])
 
-    if db:
-        return database, data
-    else:
-        return data
+    return (data, database) if db else data
 
 
 # perform a surface search for the generated url
@@ -55,7 +52,7 @@ def surface_search(search_params: list, db=False) -> list:
     for i in sorted(undup_indexes, reverse=True):
         del data[i]
 
-    return data, database if db else data
+    return (data, database) if db else data
 
 
 # existing searches checker

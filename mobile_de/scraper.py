@@ -69,10 +69,7 @@ def search_url(inp: list, db: bool) -> list:
     else:
         pagesnr = int(pagesnr[(len(pagesnr) - 1)].get_text())
 
-    if db:
-        return url, pagesnr, database
-    else:
-        return url, pagesnr
+    return (url, pagesnr, database) if db else (url, pagesnr)
 
 
 def next_page(current_url: str, current_page: int) -> str:

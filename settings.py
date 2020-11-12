@@ -15,6 +15,7 @@ PRICE_KEYS = ["Gross"]
 REG_KEYS = ["New vehicle", "New car", "Pre-Registration"]
 
 # database settings
+CRAWLER_TABLES = None
 DB_NAME = "db.sqlite3"
 CAR_TABLE_DATA = [
     ("url", "TEXT"),
