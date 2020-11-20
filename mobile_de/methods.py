@@ -58,12 +58,16 @@ def surface_search(search_params: list, db=False) -> list:
 # existing searches checker
 def checker(data: list) -> list:
     changed = False
-    car_urls = [d[0] for d in data]
-    for link in car_urls:
-        new_price = check_car_price(link)
-        if not float(new_price) == float(data[car_urls.index(link)][2]):
+    changed_data = []
+    removed = []
+    for item in data:
+        new_price = check_car_price(item[0])
+        if new_price == None:
+            removed.append(item[6])
+        elif not float(new_price) == float(item[2]):
             changed = True
-            data[car_urls.index(link)][2] = new_price
+            item.append(new_price - item[2])
+            changed_data.append(item)
 
-    assert changed == True
-    return data
+    assert changed
+    return changed_data, removed
