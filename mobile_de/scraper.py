@@ -11,6 +11,14 @@ from settings import (
 )
 
 
+def make_request(url: str, eng=False):
+    if eng:
+        url += "&lang=en"
+    response = get(url, headers=HEADERS)
+    soup = BeautifulSoup(response.content, "html.parser")
+    return soup
+
+
 def search_url(inp: list, db: bool) -> list:
     # what each makes index is
     # 0 - make
@@ -57,8 +65,7 @@ def search_url(inp: list, db: bool) -> list:
     url = BASE_URL + url_params + "&lang=en&pageNumber=1"
 
     # check number of pages
-    response = get(url, headers=HEADERS)
-    soup = BeautifulSoup(response.content, "html.parser")
+    soup = make_request(url)
 
     checker = soup.find(class_="h2 u-text-orange rbt-result-list-headline").get_text()
     checker = int(checker.split(" ")[0].replace(" ", "").replace(",", ""))
@@ -80,8 +87,7 @@ def next_page(current_url: str, current_page: int) -> str:
 
 
 def surface_data(url: str) -> list:
-    response = get(url, headers=HEADERS)
-    soup = BeautifulSoup(response.content, "html.parser")
+    soup = make_request(url)
 
     listings = soup.find_all(
         "a", {"class": "link--muted no--text--decoration result-item"}
@@ -126,8 +132,7 @@ def surface_data(url: str) -> list:
 
 
 def get_page_listings(url: str) -> list:
-    response = get(url, headers=HEADERS)
-    soup = BeautifulSoup(response.content, "html.parser")
+    soup = make_request(url)
 
     return [
         link["href"]
@@ -160,8 +165,7 @@ def get_data(url: str, find_db=False) -> list:
 
 
 def get_car_data(url: str) -> list:
-    response = get(url + "&lang=en", headers=HEADERS)
-    soup = BeautifulSoup(response.content, "html.parser")
+    soup = make_request(url, eng=True)
 
     # check if ad is still available
     try:
@@ -252,8 +256,7 @@ def get_car_data(url: str) -> list:
 
 
 def check_car_price(url: str) -> int:
-    response = get(url + "&lang=en", headers=HEADERS)
-    soup = BeautifulSoup(response.content, "html.parser")
+    soup = make_request(url, eng=True)
 
     try:
         car_price = soup.find(class_="h3 rbt-prime-price").get_text().replace(",", "")
