@@ -19,9 +19,6 @@ class DB:
         self.q_thread.start()
 
         # create necessary tables
-        for table in CRAWLER_TABLES:
-            self.create_table(table_name(table[0]), table[1])
-
         for item in _MDE_MAKES_DICT:
             name = item["n"]
             self.create_table(table_name(name), CAR_TABLE_DATA)
