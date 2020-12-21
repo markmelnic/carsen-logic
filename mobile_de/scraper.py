@@ -4,14 +4,15 @@ from bs4 import BeautifulSoup
 
 from utils import make_model_matcher, index_db_finder, index_db_finder_js
 from settings import (
+    UAS,
     HEADERS,
     BASE_URL,
     REG_KEYS,
     PRICE_KEYS,
 )
 
-
 def make_request(url: str, eng=False):
+    HEADERS["user-agent"] = UAS.random
     if eng:
         url += "&lang=en"
     response = get(url, headers=HEADERS)
